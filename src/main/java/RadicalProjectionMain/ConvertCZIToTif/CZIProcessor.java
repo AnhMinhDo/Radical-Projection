@@ -1,14 +1,13 @@
-package UIDesign;
+package RadicalProjectionMain.ConvertCZIToTif;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.io.FileSaver;
 import ij.io.Opener;
 import ij.measure.Calibration;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.Duplicator;
 import ij.plugin.RGBStackMerge;
-import ij.process.ImageProcessor;
+
 import java.io.File;
 
 public class CZIProcessor {
@@ -39,7 +38,7 @@ public class CZIProcessor {
             System.err.println("No CZI files found in folder.");
             return;
         }
-
+        IJ.log(String.valueOf(backgroundSubtraction));
         for (File file : files) {
             if (backgroundSubtraction) {
                 executeWithBGSub(file,rolling,saturated,isRotate,rotateDirection,fixArtifact);
@@ -113,14 +112,14 @@ public class CZIProcessor {
             merged.setProperty("Info", customMetadata);
             merged.setCalibration(cal);
             // Save and clean up
-            String savePath = file.getParent() + File.separator + stripExtension(file.getName()) + "_proc_noBGsub.tif";
+            String savePath = file.getParent() + File.separator + stripExtension(file.getName()) + "_proc_withBGsub.tif";
             IJ.saveAsTiff(merged, savePath);
             merged.close();
             calco.close();
             fuchsin.close();
         } else {
             imp.setProperty("Info", customMetadata);
-            IJ.saveAsTiff(imp, file.getParent() + File.separator + stripExtension(file.getName()) + "_processed_noBGsub.tif");
+            IJ.saveAsTiff(imp, file.getParent() + File.separator + stripExtension(file.getName()) + "_processed_withBGsub.tif");
         }
         imp.close();
     }
