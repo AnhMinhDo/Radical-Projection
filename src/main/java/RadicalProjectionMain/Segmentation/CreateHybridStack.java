@@ -123,7 +123,7 @@ public class CreateHybridStack {
         ops.math().multiply(ligninMultiplied, lignin, weightLigninRatioFloatType);
         ops.math().add(hybrid,celluloseMultiplied,ligninMultiplied);
         ImageJFunctions.show(hybrid);
-        // perform Projection
+        // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         for (long z = 0; z < depth; z++) {
             // Determine the slice window (handle boundaries)
             long startSlice = Math.max(0, z - windowSize / 2);
