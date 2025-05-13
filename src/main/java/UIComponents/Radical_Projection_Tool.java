@@ -801,7 +801,6 @@ public class Radical_Projection_Tool extends JFrame {
 						slider1.setValue(0);
 						slider1.setPaintTicks(true);
 						slider1.setMajorTickSpacing(25);
-						slider1.setPaintTrack(false);
 						panel12.add(slider1, "cell 2 4 4 1");
 
 						//---- label8 ----

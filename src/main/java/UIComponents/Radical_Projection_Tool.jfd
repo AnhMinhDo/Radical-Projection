@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.2.0.382" Java: "21.0.2" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.2.0.382" Java: "21.0.7" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -377,7 +377,6 @@ new FormModel {
 								"value": 0
 								"paintTicks": true
 								"majorTickSpacing": 25
-								"paintTrack": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 2 4 4 1"
 							} )
