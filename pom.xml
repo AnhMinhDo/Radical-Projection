@@ -46,6 +46,11 @@
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2-algorithm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.inra.ijpb</groupId>
+            <artifactId>MorphoLibJ_</artifactId>
+            <version>1.6.4</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
