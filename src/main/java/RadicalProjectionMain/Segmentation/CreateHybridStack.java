@@ -17,6 +17,8 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.labeling.Labeling;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -116,7 +118,9 @@ public class CreateHybridStack {
                 ops.create().img(cellulose);
         RandomAccessibleInterval<FloatType> ligninMultiplied =
                 ops.create().img(lignin);
-        RandomAccessibleInterval<FloatType> projectedstack =
+        RandomAccessibleInterval<FloatType> projectedStack =
+                ops.create().img(lignin);
+        RandomAccessibleInterval<FloatType> smoothedStack =
                 ops.create().img(lignin);
         // multiply with weight
         ops.math().multiply(celluloseMultiplied, cellulose, weightCelluloseRatioFloatType);
@@ -131,7 +135,7 @@ public class CreateHybridStack {
             int numSlicesInWindow = (int) (endSlice - startSlice + 1);
 
             // Get the output slice (2D)
-            RandomAccessibleInterval<FloatType> outputSlice = Views.hyperSlice(projectedstack, 2, z);
+            RandomAccessibleInterval<FloatType> outputSlice = Views.hyperSlice(projectedStack, 2, z);
             // Initialize a sum buffer for the output slice
             float[] sum = new float[(int) (width * height)];
             // Accumulate values from neighboring slices
@@ -151,30 +155,11 @@ public class CreateHybridStack {
                 outputCursor.next().set(s / numSlicesInWindow);
             }
         }
-        ImageJFunctions.show(projectedstack);
-//        // containers for smooth and watershed
-//        RandomAccessibleInterval<FloatType> smoothed = ops.create().img(projectedstack);
-//        // Smooth the image
-//        Gauss3.gauss(new double[]{2.0, 2.0, 2.0}, Views.extendMirrorSingle(projectedstack), smoothed);
-//        // calculate the gradient
-//        Img<FloatType> gradient = ops.create().img(projectedstack);
-//        HessianMatrix.calculateMatrix(Views.extendMirrorSingle(smoothed), gradient);
-//        // Step 3: Watershed
-////        Watershed.Configuration config = new Watershed.Configuration();
-////        config.connectivity = 26; // 26-connectivity for 3D
-//        Watershed<FloatType, FloatType> watershed = new Watershed<>(
-//                smoothed,
-//                gradient,
-//                new ArrayImgFactory<>(new FloatType()), // output factory
-////                StructuringElements.eightConnected(2),   // neighborhood
-////                true // use priority queue
-//        );
-//        watershed.process();
-//
-//        // Step 4: Labeling
-//        return ConnectedComponents.labelAllConnectedComponents(
-//                watershed.getResult(),
-//                StructuringElement.TWENTYSIX_CONNECTED);
+        ImageJFunctions.show(projectedStack);
+        // smooth the image using gaussian filter
+        Gauss3.gauss(2.0, projectedStack,smoothedStack);
+        ImageJFunctions.show(smoothedStack);
+
     }
 
 }
