@@ -19,6 +19,7 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.labeling.Labeling;
 import net.imglib2.roi.labeling.ImgLabeling;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -28,6 +29,7 @@ import org.scijava.app.StatusService;
 import net.imagej.ops.OpService;
 import org.scijava.plugin.Parameter;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class CreateHybridStack {
     private int weightCellulose;
     private final Context context;
     private int windowSize;
+    private double sigmaValueForGaussianFilter;
 
     @Parameter
     private OpService ops;
@@ -54,6 +57,7 @@ public class CreateHybridStack {
         this.context = context;
         this.ops = context.service(OpService.class);
         this.windowSize = windowSize;
+        this.sigmaValueForGaussianFilter = 2.0;
     }
 
     public void process() throws IOException {
@@ -156,14 +160,19 @@ public class CreateHybridStack {
             }
         }
         ImageJFunctions.show(projectedStack);
-        System.err.println("finish hybrid");
         // smooth the image using gaussian filter
-//        Gauss3.gauss(2.0, projectedStack,smoothedStack);
-        ops.filter().gauss(smoothedStack,projectedStack,2.0);
-        System.err.println("finish smoothing");
+        ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
         ImageJFunctions.show(smoothedStack);
-        System.err.println("smooth showed");
-
+        // create a mask based on given coordinates and add radius
+        Point point1 = new Point((int)50, (int)10);
+        Point point2 = new Point((int)100, (int)10);
+        int diameter = 20;
+        ArrayList<Point> coordinates = new ArrayList<>();
+        coordinates.add(point1);
+        coordinates.add(point2);
+        CreateMask createMask = new CreateMask(coordinates,(int)width,(int)height,diameter);
+        Img<UnsignedByteType> mask = createMask.drawMaskWithCoordinate();
+        //
     }
 
 }
