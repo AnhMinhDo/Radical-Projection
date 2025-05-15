@@ -156,9 +156,13 @@ public class CreateHybridStack {
             }
         }
         ImageJFunctions.show(projectedStack);
+        System.err.println("finish hybrid");
         // smooth the image using gaussian filter
-        Gauss3.gauss(2.0, projectedStack,smoothedStack);
+//        Gauss3.gauss(2.0, projectedStack,smoothedStack);
+        ops.filter().gauss(smoothedStack,projectedStack,2.0);
+        System.err.println("finish smoothing");
         ImageJFunctions.show(smoothedStack);
+        System.err.println("smooth showed");
 
     }
 
