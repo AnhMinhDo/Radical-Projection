@@ -368,7 +368,7 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label7"
-								"text": "More Cellulose"
+								"text": "More Lignin"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 4"
 							} )
@@ -382,7 +382,7 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label8"
-								"text": "More lignin"
+								"text": "More cellulose"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 6 4"
 							} )

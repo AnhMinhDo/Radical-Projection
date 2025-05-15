@@ -794,7 +794,7 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(label5, "cell 0 4");
 
 						//---- label7 ----
-						label7.setText("More Cellulose");
+						label7.setText("More Lignin");
 						panel12.add(label7, "cell 1 4");
 
 						//---- slider1 ----
@@ -804,7 +804,7 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(slider1, "cell 2 4 4 1");
 
 						//---- label8 ----
-						label8.setText("More lignin");
+						label8.setText("More cellulose");
 						panel12.add(label8, "cell 6 4");
 
 						//---- label6 ----
