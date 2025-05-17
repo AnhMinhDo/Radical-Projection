@@ -1,32 +1,28 @@
 package RadicalProjectionMain.Segmentation;
 
+import ij.ImagePlus;
+
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import inra.ijpb.binary.BinaryImages;
+import inra.ijpb.binary.distmap.ChamferDistanceTransform2DFloat;
+import inra.ijpb.binary.distmap.ChamferMask2D;
+import inra.ijpb.morphology.MinimaAndMaxima;
+import inra.ijpb.watershed.Watershed;
 import io.scif.services.DatasetIOService;
 import net.imagej.Dataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.ops.OpService;
-import net.imagej.ops.Ops;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.algorithm.gradient.HessianMatrix;
-import net.imglib2.algorithm.labeling.ConnectedComponents;
-import net.imglib2.algorithm.labeling.Watershed;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.labeling.Labeling;
-import net.imglib2.roi.labeling.ImgLabeling;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
-import net.imagej.ops.OpService;
 import org.scijava.plugin.Parameter;
 
 import java.awt.*;
@@ -64,7 +60,6 @@ public class CreateHybridStack {
         // get the status Service
         StatusService statusService = context.getService(StatusService.class);
         //
-//        OpService ops = context.getService(OpService.class);
         // Get DatasetService and UIService from context
         DatasetIOService ioService = context.getService(DatasetIOService.class);
         // load the image
@@ -163,16 +158,57 @@ public class CreateHybridStack {
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
         ImageJFunctions.show(smoothedStack);
-        // create a mask based on given coordinates and add radius
-        Point point1 = new Point((int)50, (int)10);
-        Point point2 = new Point((int)100, (int)10);
-        int diameter = 20;
+        // create a mask based on given coordinates
+        Point point1 = new Point((int)114, (int)68);
+        Point point2 = new Point((int)177, (int)32);
+//        Point pointForBackground = new Point((int)0, (int)0);
+        int diameter = 10;
+        int radius = diameter/2;
+        // add all points to List
         ArrayList<Point> coordinates = new ArrayList<>();
         coordinates.add(point1);
         coordinates.add(point2);
+//        coordinates.add(pointForBackground);
+        // Create innit mask
         CreateMask createMask = new CreateMask(coordinates,(int)width,(int)height,diameter);
-        Img<UnsignedByteType> mask = createMask.drawMaskWithCoordinate();
-        //
+        ImagePlus marker = createMask.drawMaskWithCoordinate();
+        marker.show();
+        // invert marker
+        marker.getProcessor().invert();
+        // Compute Distance Transform using Chamfer method
+        ChamferDistanceTransform2DFloat cdtf = new ChamferDistanceTransform2DFloat(ChamferMask2D.BORGEFORS);
+        FloatProcessor markerDistanceTransformed = cdtf.distanceMap(marker.getProcessor());
+        ImagePlus markerDistanceTransformedImagePlus = new ImagePlus("markerDistanceTransformed", markerDistanceTransformed);
+        markerDistanceTransformedImagePlus.resetDisplayRange();
+        markerDistanceTransformedImagePlus.show();
+        // Threshold: Keep pixels where distance <= radius
+        ImageProcessor grownRegionProcessor = markerDistanceTransformed.duplicate();
+        for (int p = 0; p < grownRegionProcessor.getPixelCount(); p++) {
+            grownRegionProcessor.set(p, (markerDistanceTransformed.getf(p) <= diameter) ? 255 : 0);
+        }
+        // write the growRegion to imageplus
+        ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
+        growRegion.resetDisplayRange();
+        growRegion.show();
+        // extract 1 slice and convert to Imagej1 Format
+        RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 468); // dimension 2 = Z
+        ImagePlus imageForReconstruction = ImageJFunctions.wrapFloat(slice2D, "mask for reconstruction");
+        // Make sure the display range is set properly for float images
+        imageForReconstruction.resetDisplayRange();
+        // impose minima on growRegion image
+        marker.getProcessor().invert();
+        ImageProcessor reconstructedProcessor = MinimaAndMaxima.imposeMinima(imageForReconstruction.getProcessor(),
+                                                                                marker.getProcessor(),8);
+        ImagePlus reconstructedImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
+        reconstructedImagePlus.resetDisplayRange();
+        reconstructedImagePlus.show();
+        // label minima using connected components (32-bit output)
+        ImagePlus labeledMinima = BinaryImages.componentsLabeling( growRegion, 8, 32 );
+        labeledMinima.resetDisplayRange();
+        labeledMinima.show();
+        // apply marker-based watershed using the labeled minima on the minima-imposed gradient image
+        ImagePlus segmentedImage = Watershed.computeWatershed(reconstructedImagePlus,marker,growRegion,8,true);
+        segmentedImage.resetDisplayRange();
+        segmentedImage.show();
     }
-
 }
