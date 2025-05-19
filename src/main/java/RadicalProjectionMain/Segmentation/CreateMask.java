@@ -15,6 +15,7 @@ public class CreateMask {
     private final int width;
     private final int height;
     private final int diameter;
+    private final int radius;
 
     public CreateMask(ArrayList<Point> coordinates,
                       int width,
@@ -24,18 +25,20 @@ public class CreateMask {
         this.width = width;
         this.height = height;
         this.diameter = diameter;
+        this.radius = diameter/2;
     }
 
-    public Img<UnsignedByteType> drawMaskWithCoordinate(){
-        ImagePlus imp = IJ.createImage("Circle", "8-bit black", width, height, 1);
+    public ImagePlus drawMaskWithCoordinate(){
+        ImagePlus imp = IJ.createImage("Marker", "8-bit black", width, height, 1);
         ImageProcessor ip = imp.getProcessor();
         ip.setColor(255); // white fill
         for(Point point : coordinates){
             int centerX = (int)point.getX();
             int centerY = (int)point.getY();
-            ip.fillOval(centerX - diameter, centerY - diameter, diameter, diameter);
+            ip.drawDot(centerX,centerY);
+//            ip.drawOval(centerX-radius,centerY-radius,diameter,diameter);
             imp.updateAndDraw();
         }
-        return ImageJFunctions.wrapByte(imp);
+        return imp;
     }
 }
