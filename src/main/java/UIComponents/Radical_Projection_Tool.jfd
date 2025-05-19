@@ -7,6 +7,9 @@ new FormModel {
 			name: "this"
 			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 				name: "tabbedPane2"
+				"tabPlacement": 2
+				"tabLayoutPolicy": 1
+				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "hidemode 3,align center top"
 					"$columnConstraints": "[41,fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
@@ -317,30 +320,33 @@ new FormModel {
 							name: "panel12"
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label1"
-								"text": "Length of Long-axis Analysis Window (slices)"
+								"text": "Length of Long-axis Analysis Window (μm)"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 0"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
 								name: "spinner1"
-								"model": new javax.swing.SpinnerNumberModel( 20, 0, 50, 1 )
+								"model": new javax.swing.SpinnerNumberModel {
+									minimum: 0
+									value: 1
+								}
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 0"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label2"
-								"text": "Pre-watershed Smoothing [x-fold](Keep between 1-2)"
+								"text": "Pre-watershed Smoothing"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 1"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
 								name: "spinner2"
+								"model": new javax.swing.SpinnerNumberModel( 2.0, 0.0, 5.0, 0.1 )
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 1"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label3"
-								"text": "Pre-watershed Smoothing [x-fold](1,2 or more)"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 2"
 							} )
@@ -351,12 +357,13 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label4"
-								"text": "Inner Vessel Diameter [μm](1 to 1.5 works well)"
+								"text": "Inner Vessel Diameter [μm]"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 3"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
 								name: "spinner4"
+								"model": new javax.swing.SpinnerNumberModel( 1.0, 0.1, 10.0, 0.1 )
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 3"
 							} )
@@ -388,19 +395,25 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label6"
-								"text": "Name of current processing file"
+								"text": "Status"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 5"
 							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label13"
+								"text": "Waiting..."
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 1 5"
+							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button21"
-								"text": "Continue with parameter set"
+								name: "button22"
+								"text": "Projection and smoothing"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 6"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button22"
-								"text": "Tuning"
+								name: "button3"
+								"text": "Watershed"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 6"
 							} )

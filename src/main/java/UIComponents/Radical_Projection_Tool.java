@@ -1,10 +1,7 @@
 package UIComponents;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +14,15 @@ import RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
 import RadicalProjectionMain.CreateSideView.CreateSideView;
 import RadicalProjectionMain.Segmentation.CreateHybridStack;
 import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.ImageCanvas;
+import ij.gui.PointRoi;
+import jdk.nashorn.internal.ir.Flags;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
 
@@ -31,12 +37,13 @@ public class Radical_Projection_Tool extends JFrame {
 
 	private ArrayList<Path> processedFileInCreateSideView;
 	private Context context;
+	private RandomAccessibleInterval<FloatType> smoothedStack;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
 		table1.setModel(new DefaultTableModel(new Object[]{"File Path"}, 0));
 		table4.setModel(new DefaultTableModel(new Object[]{"File Path"}, 0));
-
+		
 		// Action for Browse button in Converting step
 		button5.addActionListener(new ActionListener() {
 			@Override
@@ -285,14 +292,19 @@ public class Radical_Projection_Tool extends JFrame {
 						DefaultTableModel model = (DefaultTableModel) table4.getModel();
 						int rowCount = model.getRowCount();
 						int sliderValue = slider1.getValue();
-						int windowSize = (int)spinner1.getValue();
+						int windowSizeinMicroMeter = (int)spinner1.getValue();
+						int windowSize = Math.round(windowSizeinMicroMeter/0.2f);
+						double sigmaValueFilter = (double) spinner2.getValue();
 						ArrayList<Path> filePaths = new ArrayList<>();
 						for (int i = 0; i < rowCount; i++) {
 							filePaths.add(Paths.get(model.getValueAt(i, 0).toString()));
 						}
 						for (Path filePath : filePaths){
-							CreateHybridStack chs = new CreateHybridStack(context,filePath,sliderValue, windowSize);
-							chs.process();
+							CreateHybridStack chs = new CreateHybridStack(context,filePath,
+									sliderValue,
+									windowSize,
+									sigmaValueFilter);
+							smoothedStack = chs.process();
 						}
 						return null;
 					}
@@ -305,6 +317,37 @@ public class Radical_Projection_Tool extends JFrame {
 			}
 		});
 
+		// button Watershed to view the image and let user
+		button3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ImagePlus imp = ImageJFunctions.wrapFloat(smoothedStack, "Title");
+				imp.show();
+				int maxClicks = 2;
+				// Create a new PointRoi to collect points
+				PointRoi pointRoi = new PointRoi();
+				imp.setRoi(pointRoi);
+				ImageCanvas canvas = imp.getCanvas();
+				canvas.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						// Add point to the PointRoi
+						int x = canvas.offScreenX(e.getX());
+						int y = canvas.offScreenY(e.getY());
+						pointRoi.addPoint(x, y);
+						imp.updateAndDraw();
+						// Get all collected points
+						int[] xCoords = pointRoi.getXCoordinates();
+						int[] yCoords = pointRoi.getYCoordinates();
+						Rectangle bounds = pointRoi.getBounds();
+						IJ.log("Current points:");
+						for (int i = 0; i < pointRoi.getNCoordinates(); i++) {
+							IJ.log((i+1) + ": (" + (xCoords[i]+bounds.x) + ", " + (yCoords[i]+bounds.y) + ")");
+						}
+					}
+				});
+				}
+		});
 	}
 
 
@@ -369,8 +412,9 @@ public class Radical_Projection_Tool extends JFrame {
 		slider1 = new JSlider();
 		label8 = new JLabel();
 		label6 = new JLabel();
-		button21 = new JButton();
+		label13 = new JLabel();
 		button22 = new JButton();
+		button3 = new JButton();
 		panel6 = new JPanel();
 		button8 = new JButton();
 		button9 = new JButton();
@@ -397,6 +441,9 @@ public class Radical_Projection_Tool extends JFrame {
 
 		//======== tabbedPane2 ========
 		{
+			tabbedPane2.setTabPlacement(SwingConstants.LEFT);
+			tabbedPane2.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+			tabbedPane2.setPreferredSize(null);
 
 			//======== panel3 ========
 			{
@@ -767,26 +814,29 @@ public class Radical_Projection_Tool extends JFrame {
 							"[]"));
 
 						//---- label1 ----
-						label1.setText("Length of Long-axis Analysis Window (slices)");
+						label1.setText("Length of Long-axis Analysis Window (\u03bcm)");
 						panel12.add(label1, "cell 0 0");
 
 						//---- spinner1 ----
-						spinner1.setModel(new SpinnerNumberModel(20, 0, 50, 1));
+						spinner1.setModel(new SpinnerNumberModel(1, 0, null, 1));
 						panel12.add(spinner1, "cell 1 0");
 
 						//---- label2 ----
-						label2.setText("Pre-watershed Smoothing [x-fold](Keep between 1-2)");
+						label2.setText("Pre-watershed Smoothing");
 						panel12.add(label2, "cell 0 1");
-						panel12.add(spinner2, "cell 1 1");
 
-						//---- label3 ----
-						label3.setText("Pre-watershed Smoothing [x-fold](1,2 or more)");
+						//---- spinner2 ----
+						spinner2.setModel(new SpinnerNumberModel(2.0, 0.0, 5.0, 0.1));
+						panel12.add(spinner2, "cell 1 1");
 						panel12.add(label3, "cell 0 2");
 						panel12.add(spinner3, "cell 1 2");
 
 						//---- label4 ----
-						label4.setText("Inner Vessel Diameter [\u03bcm](1 to 1.5 works well)");
+						label4.setText("Inner Vessel Diameter [\u03bcm]");
 						panel12.add(label4, "cell 0 3");
+
+						//---- spinner4 ----
+						spinner4.setModel(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
 						panel12.add(spinner4, "cell 1 3");
 
 						//---- label5 ----
@@ -808,16 +858,20 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(label8, "cell 6 4");
 
 						//---- label6 ----
-						label6.setText("Name of current processing file");
+						label6.setText("Status");
 						panel12.add(label6, "cell 0 5");
 
-						//---- button21 ----
-						button21.setText("Continue with parameter set");
-						panel12.add(button21, "cell 0 6");
+						//---- label13 ----
+						label13.setText("Waiting...");
+						panel12.add(label13, "cell 1 5");
 
 						//---- button22 ----
-						button22.setText("Tuning");
-						panel12.add(button22, "cell 1 6");
+						button22.setText("Projection and smoothing");
+						panel12.add(button22, "cell 0 6");
+
+						//---- button3 ----
+						button3.setText("Watershed");
+						panel12.add(button3, "cell 1 6");
 					}
 					tabbedPane4.addTab("Parameters", panel12);
 				}
@@ -1096,8 +1150,9 @@ public class Radical_Projection_Tool extends JFrame {
 	private JSlider slider1;
 	private JLabel label8;
 	private JLabel label6;
-	private JButton button21;
+	private JLabel label13;
 	private JButton button22;
+	private JButton button3;
 	private JPanel panel6;
 	private JButton button8;
 	private JButton button9;
