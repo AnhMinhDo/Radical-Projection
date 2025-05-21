@@ -129,33 +129,34 @@ public class CreateHybridStack {
         ops.math().add(hybrid,celluloseMultiplied,ligninMultiplied);
         ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
-        for (long z = 0; z < depth; z++) {
-            // Determine the slice window (handle boundaries)
-            long startSlice = Math.max(0, z - windowSize / 2);
-            long endSlice = Math.min(depth - 1, z + windowSize / 2);
-            int numSlicesInWindow = (int) (endSlice - startSlice + 1);
-
-            // Get the output slice (2D)
-            RandomAccessibleInterval<FloatType> outputSlice = Views.hyperSlice(projectedStack, 2, z);
-            // Initialize a sum buffer for the output slice
-            float[] sum = new float[(int) (width * height)];
-            // Accumulate values from neighboring slices
-            for (long zz = startSlice; zz <= endSlice; zz++) {
-                RandomAccessibleInterval<FloatType> inputSlice = Views.hyperSlice(hybrid, 2, zz);
-                Cursor<FloatType> cursor = Views.flatIterable(inputSlice).cursor();
-
-                int pixelIndex = 0;
-                while (cursor.hasNext()) {
-                    sum[pixelIndex] += cursor.next().get();
-                    pixelIndex++;
-                }
-            }
-            // Compute average and write to output
-            Cursor<FloatType> outputCursor = Views.flatIterable(outputSlice).cursor();
-            for (float s : sum) {
-                outputCursor.next().set(s / numSlicesInWindow);
-            }
-        }
+        WindowSlidingProjection.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
+//        for (long z = 0; z < depth; z++) {
+//            // Determine the slice window (handle boundaries)
+//            long startSlice = Math.max(0, z - windowSize / 2);
+//            long endSlice = Math.min(depth - 1, z + windowSize / 2);
+//            int numSlicesInWindow = (int) (endSlice - startSlice + 1);
+//
+//            // Get the output slice (2D)
+//            RandomAccessibleInterval<FloatType> outputSlice = Views.hyperSlice(projectedStack, 2, z);
+//            // Initialize a sum buffer for the output slice
+//            float[] sum = new float[(int) (width * height)];
+//            // Accumulate values from neighboring slices
+//            for (long zz = startSlice; zz <= endSlice; zz++) {
+//                RandomAccessibleInterval<FloatType> inputSlice = Views.hyperSlice(hybrid, 2, zz);
+//                Cursor<FloatType> cursor = Views.flatIterable(inputSlice).cursor();
+//
+//                int pixelIndex = 0;
+//                while (cursor.hasNext()) {
+//                    sum[pixelIndex] += cursor.next().get();
+//                    pixelIndex++;
+//                }
+//            }
+//            // Compute average and write to output
+//            Cursor<FloatType> outputCursor = Views.flatIterable(outputSlice).cursor();
+//            for (float s : sum) {
+//                outputCursor.next().set(s / numSlicesInWindow);
+//            }
+//        }
         ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
