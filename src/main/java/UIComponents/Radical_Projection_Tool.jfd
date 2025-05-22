@@ -314,7 +314,7 @@ new FormModel {
 						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 							"$layoutConstraints": "hidemode 3,align center top"
-							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
 							"$rowConstraints": "[][][][][][][][]"
 						} ) {
 							name: "panel12"
@@ -375,7 +375,7 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label7"
-								"text": "More Lignin"
+								"text": "Lignin 100%"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 4"
 							} )
@@ -385,13 +385,13 @@ new FormModel {
 								"paintTicks": true
 								"majorTickSpacing": 25
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 4 4 1"
+								"value": "cell 2 4 5 1"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label8"
-								"text": "More cellulose"
+								"text": "Cellulose 0%"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 6 4"
+								"value": "cell 7 4"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label6"

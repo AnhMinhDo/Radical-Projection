@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
@@ -281,6 +283,16 @@ public class Radical_Projection_Tool extends JFrame {
 				model.setRowCount(0);
 			}
 		});
+		// Slider update the percentage when the value change
+		slider1.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e){
+				int currentValue = slider1.getValue();
+				label7.setText("Lignin " + (100-currentValue) + "%");
+				label8.setText("Cellulose " + currentValue + "%");
+			}
+		});
+
 		// button tuning in segmentation step
 		button22.addActionListener(new ActionListener() {
 			@Override
@@ -802,6 +814,7 @@ public class Radical_Projection_Tool extends JFrame {
 							"[fill]" +
 							"[fill]" +
 							"[fill]" +
+							"[fill]" +
 							"[fill]",
 							// rows
 							"[]" +
@@ -844,18 +857,18 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(label5, "cell 0 4");
 
 						//---- label7 ----
-						label7.setText("More Lignin");
+						label7.setText("Lignin 100%");
 						panel12.add(label7, "cell 1 4");
 
 						//---- slider1 ----
 						slider1.setValue(0);
 						slider1.setPaintTicks(true);
 						slider1.setMajorTickSpacing(25);
-						panel12.add(slider1, "cell 2 4 4 1");
+						panel12.add(slider1, "cell 2 4 5 1");
 
 						//---- label8 ----
-						label8.setText("More cellulose");
-						panel12.add(label8, "cell 6 4");
+						label8.setText("Cellulose 0%");
+						panel12.add(label8, "cell 7 4");
 
 						//---- label6 ----
 						label6.setText("Status");
