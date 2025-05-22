@@ -307,6 +307,7 @@ public class Radical_Projection_Tool extends JFrame {
 						int windowSizeinMicroMeter = (int)spinner1.getValue();
 						int windowSize = Math.round(windowSizeinMicroMeter/0.2f);
 						double sigmaValueFilter = (double) spinner2.getValue();
+						int diameter = (int) spinner4.getValue();
 						ArrayList<Path> filePaths = new ArrayList<>();
 						for (int i = 0; i < rowCount; i++) {
 							filePaths.add(Paths.get(model.getValueAt(i, 0).toString()));
@@ -315,7 +316,8 @@ public class Radical_Projection_Tool extends JFrame {
 							CreateHybridStack chs = new CreateHybridStack(context,filePath,
 									sliderValue,
 									windowSize,
-									sigmaValueFilter);
+									sigmaValueFilter,
+									diameter);
 							smoothedStack = chs.process();
 						}
 						return null;
