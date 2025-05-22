@@ -42,7 +42,7 @@ public class CreateHybridStack {
     private int diameter;
 
     @Parameter
-    private OpService ops;
+    private final OpService ops;
 
     public CreateHybridStack(Context context,
                              Path filePath,
@@ -178,9 +178,6 @@ public class CreateHybridStack {
         reconstructedProcessor.convertToByte(true);
         ImagePlus reconstructedImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
         reconstructedImagePlus.show();
-        // label minima using connected components (32-bit output)
-        ImagePlus labeledMinima = BinaryImages.componentsLabeling( growRegion, 8, 32 );
-        labeledMinima.show();
         // apply marker-based watershed using the labeled minima on the minima-imposed gradient image
         ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
                 reconstructedImagePlus, 255,8
