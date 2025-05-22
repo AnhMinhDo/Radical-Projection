@@ -851,7 +851,7 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(label4, "cell 0 3");
 
 						//---- spinner4 ----
-						spinner4.setModel(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
+						spinner4.setModel(new SpinnerNumberModel(1, 0, 10, 1));
 						panel12.add(spinner4, "cell 1 3");
 
 						//---- label5 ----
