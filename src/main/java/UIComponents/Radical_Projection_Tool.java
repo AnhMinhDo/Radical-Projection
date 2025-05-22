@@ -855,7 +855,7 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(spinner4, "cell 1 3");
 
 						//---- label5 ----
-						label5.setText("Hybrid-weighting of cellulose-to-lignin[%]");
+						label5.setText("Hybrid-weighting of lignin-to-cellulose[%]");
 						panel12.add(label5, "cell 0 4");
 
 						//---- label7 ----
