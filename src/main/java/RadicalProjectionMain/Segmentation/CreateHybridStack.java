@@ -2,14 +2,13 @@ package RadicalProjectionMain.Segmentation;
 
 import ij.ImagePlus;
 
-import ij.plugin.filter.EDM;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.binary.distmap.ChamferDistanceTransform2DFloat;
 import inra.ijpb.binary.distmap.ChamferMask2D;
 import inra.ijpb.morphology.MinimaAndMaxima;
-import inra.ijpb.watershed.Watershed;
+import inra.ijpb.watershed.ExtendedMinimaWatershed;
 import io.scif.services.DatasetIOService;
 import net.imagej.Dataset;
 import net.imagej.ImgPlus;
@@ -40,6 +39,7 @@ public class CreateHybridStack {
     private final Context context;
     private int windowSize;
     private double sigmaValueForGaussianFilter;
+    private int diameter;
 
     @Parameter
     private OpService ops;
@@ -48,7 +48,8 @@ public class CreateHybridStack {
                              Path filePath,
                              int weight,
                              int windowSize,
-                             double sigmaValueForGaussianFilter) {
+                             double sigmaValueForGaussianFilter,
+                             int diameter) {
         this.filePath = filePath;
         this.weightCellulose = weight;
         this.weightLignin = 100-weight;
@@ -56,6 +57,7 @@ public class CreateHybridStack {
         this.ops = context.service(OpService.class);
         this.windowSize = windowSize;
         this.sigmaValueForGaussianFilter = sigmaValueForGaussianFilter;
+        this.diameter= diameter;
     }
 
     public RandomAccessibleInterval<FloatType> process() throws IOException {
@@ -130,33 +132,6 @@ public class CreateHybridStack {
         ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         WindowSlidingProjection.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
-//        for (long z = 0; z < depth; z++) {
-//            // Determine the slice window (handle boundaries)
-//            long startSlice = Math.max(0, z - windowSize / 2);
-//            long endSlice = Math.min(depth - 1, z + windowSize / 2);
-//            int numSlicesInWindow = (int) (endSlice - startSlice + 1);
-//
-//            // Get the output slice (2D)
-//            RandomAccessibleInterval<FloatType> outputSlice = Views.hyperSlice(projectedStack, 2, z);
-//            // Initialize a sum buffer for the output slice
-//            float[] sum = new float[(int) (width * height)];
-//            // Accumulate values from neighboring slices
-//            for (long zz = startSlice; zz <= endSlice; zz++) {
-//                RandomAccessibleInterval<FloatType> inputSlice = Views.hyperSlice(hybrid, 2, zz);
-//                Cursor<FloatType> cursor = Views.flatIterable(inputSlice).cursor();
-//
-//                int pixelIndex = 0;
-//                while (cursor.hasNext()) {
-//                    sum[pixelIndex] += cursor.next().get();
-//                    pixelIndex++;
-//                }
-//            }
-//            // Compute average and write to output
-//            Cursor<FloatType> outputCursor = Views.flatIterable(outputSlice).cursor();
-//            for (float s : sum) {
-//                outputCursor.next().set(s / numSlicesInWindow);
-//            }
-//        }
         ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
@@ -164,9 +139,7 @@ public class CreateHybridStack {
         // create a mask based on given coordinates
         Point point1 = new Point((int)114, (int)68);
         Point point2 = new Point((int)177, (int)32);
-        Point pointForBackground = new Point((int)0, (int)0);
-        int diameter = 10;
-        int radius = diameter/2;
+        Point pointForBackground = new Point((int)width-1, (int)height-1);
         // add all points to List
         ArrayList<Point> coordinates = new ArrayList<>();
         coordinates.add(point1);
@@ -183,9 +156,8 @@ public class CreateHybridStack {
         ChamferDistanceTransform2DFloat cdtf = new ChamferDistanceTransform2DFloat(ChamferMask2D.BORGEFORS);
         FloatProcessor markerDistanceTransformed = cdtf.distanceMap(markerInverted.getProcessor());
         ImagePlus markerDistanceTransformedImagePlus = new ImagePlus("markerDistanceTransformed", markerDistanceTransformed);
-        markerDistanceTransformedImagePlus.resetDisplayRange();
         markerDistanceTransformedImagePlus.show();
-        // Threshold: Keep pixels where distance <= radius
+        // Threshold: Keep pixels where distance <= diameter
         ImageProcessor grownRegionProcessor = markerDistanceTransformed.duplicate();
         float[] markerDistanceTransformedFloatArray = (float[]) markerDistanceTransformed.getPixels();
         float[] grownRegionProcessorFloatArray = (float[]) grownRegionProcessor.getPixels();
@@ -194,7 +166,6 @@ public class CreateHybridStack {
         }
         // write the growRegion to imageplus
         ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
-        growRegion.resetDisplayRange();
         growRegion.show();
         // extract 1 slice and convert to Imagej1 Format
         RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 468); // dimension 2 = Z
@@ -204,23 +175,17 @@ public class CreateHybridStack {
         // impose minima on growRegion image
         ImageProcessor reconstructedProcessor = MinimaAndMaxima.imposeMinima(imageForReconstruction.getProcessor(),
                                                                                 growRegion.getProcessor(),8);
+        reconstructedProcessor.convertToByte(true);
         ImagePlus reconstructedImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
-        reconstructedImagePlus.resetDisplayRange();
         reconstructedImagePlus.show();
         // label minima using connected components (32-bit output)
         ImagePlus labeledMinima = BinaryImages.componentsLabeling( growRegion, 8, 32 );
-        labeledMinima.resetDisplayRange();
         labeledMinima.show();
         // apply marker-based watershed using the labeled minima on the minima-imposed gradient image
-//        ImagePlus segmentedImage = Watershed.computeWatershed(
-//                reconstructedImagePlus,markerInverted,8,true);
-//        segmentedImage.resetDisplayRange();
-//        segmentedImage.show();
-        EDM edm = new EDM();
-        edm.toWatershed(reconstructedProcessor.convertToByteProcessor());
-        ImagePlus watershededImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
-        watershededImagePlus.resetDisplayRange();
-        watershededImagePlus.show();
+        ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
+                reconstructedImagePlus, 255,8
+        );
+        segmentedImage.show();
         return slice2D;
     }
 }
