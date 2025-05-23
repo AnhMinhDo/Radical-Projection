@@ -363,7 +363,7 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
 								name: "spinner4"
-								"model": new javax.swing.SpinnerNumberModel( 1, 0, 10, 1 )
+								"model": new javax.swing.SpinnerNumberModel( 1, 0, 30, 1 )
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 3"
 							} )
