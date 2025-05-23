@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -15,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
 import RadicalProjectionMain.CreateSideView.CreateSideView;
 import RadicalProjectionMain.Segmentation.CreateHybridStack;
+import RadicalProjectionMain.Segmentation.DataDuringSegmentationProcess;
+import RadicalProjectionMain.Segmentation.Reconstruction;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
@@ -41,7 +44,8 @@ public class Radical_Projection_Tool extends JFrame {
 
 	private ArrayList<Path> processedFileInCreateSideView;
 	private Context context;
-	private RandomAccessibleInterval<FloatType> smoothedStack;
+	private DataDuringSegmentationProcess dataAfterSmoothed;
+	private ArrayList<Point> coordinates ;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
@@ -299,9 +303,9 @@ public class Radical_Projection_Tool extends JFrame {
 		button22.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SwingWorker<Void, Void> hybridStackWorker = new SwingWorker<Void, Void>() {
+				SwingWorker<DataDuringSegmentationProcess, Void> hybridStackWorker = new SwingWorker<DataDuringSegmentationProcess, Void>() {
 					@Override
-					protected Void doInBackground() throws Exception {
+					protected DataDuringSegmentationProcess doInBackground() throws Exception {
 						// get all file paths from table
 						DefaultTableModel model = (DefaultTableModel) table4.getModel();
 						int rowCount = model.getRowCount();
@@ -314,29 +318,32 @@ public class Radical_Projection_Tool extends JFrame {
 						for (int i = 0; i < rowCount; i++) {
 							filePaths.add(Paths.get(model.getValueAt(i, 0).toString()));
 						}
-						for (Path filePath : filePaths){
-							CreateHybridStack chs = new CreateHybridStack(context,filePath,
+						CreateHybridStack chs = new CreateHybridStack(context,filePaths.get(0),
 									sliderValue,
 									windowSize,
 									sigmaValueFilter,
 									diameter);
-							smoothedStack = chs.process();
-						}
-						return null;
+						return chs.process();
 					}
 					@Override
 					protected void done() {
-						IJ.showStatus("Finish processing");
+                        try {
+                            dataAfterSmoothed = get();
+							IJ.showStatus("Finish processing");
+                        } catch (InterruptedException | ExecutionException ex) {
+                            throw new RuntimeException(ex);
+                        }
 					}
 				};
 				hybridStackWorker.execute();
 			}
 		});
 
-		// button Watershed to view the image and let user
-		button3.addActionListener(new ActionListener() {
+		// button select Centroid to view the image and let user
+		button4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				RandomAccessibleInterval<FloatType>	smoothedStack = dataAfterSmoothed.getSmoothStack();
 				ImagePlus imp = ImageJFunctions.wrapFloat(smoothedStack, "Title");
 				imp.setProcessor(imp.getProcessor().convertToByte(true));
 				imp.show();
@@ -345,12 +352,15 @@ public class Radical_Projection_Tool extends JFrame {
 				PointRoi pointRoi = new PointRoi();
 				imp.setRoi(pointRoi);
 				ImageCanvas canvas = imp.getCanvas();
+
 				canvas.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						// Add point to the PointRoi
 						int x = canvas.offScreenX(e.getX());
 						int y = canvas.offScreenY(e.getY());
+						Point point = new Point(x,y);
+						coordinates.add(point);
 						pointRoi.addPoint(x, y);
 						imp.updateAndDraw();
 						// Get all collected points
@@ -364,9 +374,18 @@ public class Radical_Projection_Tool extends JFrame {
 					}
 				});
 				}
+				//TODO: AnhMinh: create state for the window used to show the image, update the window when the user click a second time when they update the data
+		});
+
+		// button Watershed to segment the image
+		button3.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
+				recon.process();
+			}
 		});
 	}
-
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -431,6 +450,7 @@ public class Radical_Projection_Tool extends JFrame {
 		label6 = new JLabel();
 		label13 = new JLabel();
 		button22 = new JButton();
+		button4 = new JButton();
 		button3 = new JButton();
 		panel6 = new JPanel();
 		button8 = new JButton();
@@ -820,6 +840,7 @@ public class Radical_Projection_Tool extends JFrame {
 							"[fill]" +
 							"[fill]" +
 							"[fill]" +
+							"[fill]" +
 							"[fill]",
 							// rows
 							"[]" +
@@ -869,11 +890,11 @@ public class Radical_Projection_Tool extends JFrame {
 						slider1.setValue(0);
 						slider1.setPaintTicks(true);
 						slider1.setMajorTickSpacing(25);
-						panel12.add(slider1, "cell 2 4 5 1");
+						panel12.add(slider1, "cell 3 4 5 1");
 
 						//---- label8 ----
 						label8.setText("Cellulose 0%");
-						panel12.add(label8, "cell 7 4");
+						panel12.add(label8, "cell 8 4");
 
 						//---- label6 ----
 						label6.setText("Status");
@@ -887,9 +908,13 @@ public class Radical_Projection_Tool extends JFrame {
 						button22.setText("Projection and smoothing");
 						panel12.add(button22, "cell 0 6");
 
+						//---- button4 ----
+						button4.setText("Select Centroid");
+						panel12.add(button4, "cell 1 6");
+
 						//---- button3 ----
 						button3.setText("Watershed");
-						panel12.add(button3, "cell 1 6");
+						panel12.add(button3, "cell 2 6");
 					}
 					tabbedPane4.addTab("Parameters", panel12);
 				}
@@ -1170,6 +1195,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private JLabel label6;
 	private JLabel label13;
 	private JButton button22;
+	private JButton button4;
 	private JButton button3;
 	private JPanel panel6;
 	private JButton button8;
