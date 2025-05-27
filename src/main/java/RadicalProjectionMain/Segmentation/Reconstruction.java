@@ -16,33 +16,28 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Reconstruction {
-    private RandomAccessibleInterval<FloatType> smoothStack;
-private ArrayList<Point> coordinates;
-private int width;
-private int height;
-private int diameter;
-
-private RandomAccessibleInterval<FloatType> smoothedStack;
+private ArrayList<Point> coordinatesOutside;
+private final int width;
+private final int height;
+private final int diameter;
+private final RandomAccessibleInterval<FloatType> smoothedStack;
 
     public Reconstruction(DataDuringSegmentationProcess ddsp, ArrayList<Point> coordinates){
-        this.smoothStack=ddsp.getSmoothStack();
+        this.smoothedStack=ddsp.getSmoothStack();
         this.width=ddsp.getWidth();
         this.height=ddsp.getHeight();
         this.diameter=ddsp.getDiameter();
-        this.coordinates=coordinates;
+        this.coordinatesOutside=coordinates;
     }
 
     public void process(){
         // create a mask based on given coordinates
-        Point point1 = new Point((int)114, (int)68);
-        Point point2 = new Point((int)177, (int)32);
         Point pointForBackground = new Point((int)width-1, (int)height-1);
         // add all points to List
-        coordinates.add(point1);
-        coordinates.add(point2);
-        coordinates.add(pointForBackground);
+        coordinatesOutside.add(pointForBackground);
+        System.err.println(coordinatesOutside);
         // Create innit mask
-        CreateMask createMask = new CreateMask(coordinates,(int)width,(int)height,diameter);
+        CreateMask createMask = new CreateMask(coordinatesOutside,(int)width,(int)height,diameter);
         ImagePlus marker = createMask.drawMaskWithCoordinate();
         marker.show();
         // invert marker
