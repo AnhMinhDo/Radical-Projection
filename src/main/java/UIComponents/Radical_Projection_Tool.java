@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
@@ -27,8 +28,11 @@ import ij.process.ImageProcessor;
 import jdk.nashorn.internal.ir.Flags;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
@@ -45,7 +49,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private ArrayList<Path> processedFileInCreateSideView;
 	private Context context;
 	private DataDuringSegmentationProcess dataAfterSmoothed;
-	private ArrayList<Point> coordinates ;
+	private ArrayList<Point> coordinates = new ArrayList<>() ;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
@@ -344,14 +348,25 @@ public class Radical_Projection_Tool extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				RandomAccessibleInterval<FloatType>	smoothedStack = dataAfterSmoothed.getSmoothStack();
-				ImagePlus imp = ImageJFunctions.wrapFloat(smoothedStack, "Title");
-				imp.setProcessor(imp.getProcessor().convertToByte(true));
-				imp.show();
-				int maxClicks = 2;
+				RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,468);
+				// Copy the view to a new Img<FloatType>
+				// Create copy using cursors
+				Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(just1Slide));
+				net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(just1Slide).cursor();
+				net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
+				while (srcCursor.hasNext()) {
+					dstCursor.next().set(srcCursor.next());
+				}
+				// Convert to ImagePlus
+				ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
+				impFloat.resetDisplayRange();
+				ImagePlus impInByte = new ImagePlus("impInByte", impFloat.getProcessor().convertToByte(true));
+				impFloat.resetDisplayRange();
+				impInByte.show();
 				// Create a new PointRoi to collect points
 				PointRoi pointRoi = new PointRoi();
-				imp.setRoi(pointRoi);
-				ImageCanvas canvas = imp.getCanvas();
+				impInByte.setRoi(pointRoi);
+				ImageCanvas canvas = impInByte.getCanvas();
 
 				canvas.addMouseListener(new MouseAdapter() {
 					@Override
@@ -359,18 +374,9 @@ public class Radical_Projection_Tool extends JFrame {
 						// Add point to the PointRoi
 						int x = canvas.offScreenX(e.getX());
 						int y = canvas.offScreenY(e.getY());
-						Point point = new Point(x,y);
-						coordinates.add(point);
-						pointRoi.addPoint(x, y);
-						imp.updateAndDraw();
-						// Get all collected points
-						int[] xCoords = pointRoi.getXCoordinates();
-						int[] yCoords = pointRoi.getYCoordinates();
-						Rectangle bounds = pointRoi.getBounds();
-						IJ.log("Current points:");
-						for (int i = 0; i < pointRoi.getNCoordinates(); i++) {
-							IJ.log((i+1) + ": (" + (xCoords[i]+bounds.x) + ", " + (yCoords[i]+bounds.y) + ")");
-						}
+						Point pointLatest = new Point(x,y);
+						coordinates.add(pointLatest);
+						IJ.log(coordinates.toString());
 					}
 				});
 				}
@@ -383,6 +389,7 @@ public class Radical_Projection_Tool extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
 				recon.process();
+				coordinates.clear();
 			}
 		});
 	}
@@ -910,10 +917,12 @@ public class Radical_Projection_Tool extends JFrame {
 
 						//---- button4 ----
 						button4.setText("Select Centroid");
+						button4.setEnabled(false);
 						panel12.add(button4, "cell 1 6");
 
 						//---- button3 ----
 						button3.setText("Watershed");
+						button3.setEnabled(false);
 						panel12.add(button3, "cell 2 6");
 					}
 					tabbedPane4.addTab("Parameters", panel12);

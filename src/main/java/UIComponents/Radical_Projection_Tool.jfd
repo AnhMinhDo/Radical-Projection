@@ -414,12 +414,14 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "button4"
 								"text": "Select Centroid"
+								"enabled": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 6"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "button3"
 								"text": "Watershed"
+								"enabled": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 2 6"
 							} )
