@@ -334,6 +334,7 @@ public class Radical_Projection_Tool extends JFrame {
                         try {
                             dataAfterSmoothed = get();
 							IJ.showStatus("Finish processing");
+							button4.setEnabled(true);
                         } catch (InterruptedException | ExecutionException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -377,6 +378,7 @@ public class Radical_Projection_Tool extends JFrame {
 						Point pointLatest = new Point(x,y);
 						coordinates.add(pointLatest);
 						IJ.log(coordinates.toString());
+						button3.setEnabled(true);
 					}
 				});
 				}
@@ -390,6 +392,7 @@ public class Radical_Projection_Tool extends JFrame {
 				Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
 				recon.process();
 				coordinates.clear();
+				button3.setEnabled(false);
 			}
 		});
 	}
