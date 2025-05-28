@@ -344,7 +344,7 @@ public class Radical_Projection_Tool extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				RandomAccessibleInterval<FloatType>	smoothedStack = dataAfterSmoothed.getSmoothStack();
-				RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,468);
+				RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,0);
 				// Copy the view to a new Img<FloatType>
 				// Create copy using cursors
 				Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(just1Slide));
@@ -384,10 +384,22 @@ public class Radical_Projection_Tool extends JFrame {
 		button3.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
-				recon.process();
-				coordinates.clear();
-				button3.setEnabled(false);
+				SwingWorker<Void, Void> segmentationWorker = new SwingWorker<Void, Void>() {
+					@Override
+					protected Void doInBackground() throws Exception {
+						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
+						recon.process();
+						return null;
+					}
+					@Override
+					protected void done(){
+						coordinates.clear();
+						button3.setEnabled(false);
+					}
+				};
+
+
+
 			}
 		});
 	}
@@ -846,6 +858,8 @@ public class Radical_Projection_Tool extends JFrame {
 							"[fill]" +
 							"[fill]" +
 							"[fill]" +
+							"[fill]" +
+							"[fill]" +
 							"[fill]",
 							// rows
 							"[]" +
@@ -889,17 +903,19 @@ public class Radical_Projection_Tool extends JFrame {
 
 						//---- label7 ----
 						label7.setText("Lignin 100%");
+						label7.setHorizontalAlignment(SwingConstants.RIGHT);
 						panel12.add(label7, "cell 1 4");
 
 						//---- slider1 ----
 						slider1.setValue(0);
 						slider1.setPaintTicks(true);
 						slider1.setMajorTickSpacing(25);
-						panel12.add(slider1, "cell 3 4 5 1");
+						panel12.add(slider1, "cell 2 4");
 
 						//---- label8 ----
 						label8.setText("Cellulose 0%");
-						panel12.add(label8, "cell 8 4");
+						label8.setHorizontalAlignment(SwingConstants.LEFT);
+						panel12.add(label8, "cell 3 4");
 
 						//---- label6 ----
 						label6.setText("Status");
