@@ -397,9 +397,7 @@ public class Radical_Projection_Tool extends JFrame {
 						button3.setEnabled(false);
 					}
 				};
-
-
-
+				segmentationWorker.execute();
 			}
 		});
 	}
