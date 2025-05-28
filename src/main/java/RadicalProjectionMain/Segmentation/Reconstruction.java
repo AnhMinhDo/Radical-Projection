@@ -60,7 +60,7 @@ private final RandomAccessibleInterval<FloatType> smoothedStack;
         growRegion.show();
         // extract 1 slice and convert to Imagej1 Format
         //TODO: AnhMinh: do not hard code the position for the command below, should change to 1st image in the stack
-        RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 468); // dimension 2 = Z
+        RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 1); // dimension 2 = Z
         ImagePlus imageForReconstruction = ImageJFunctions.wrapFloat(slice2D, "mask for reconstruction");
         // Make sure the display range is set properly for float images
         imageForReconstruction.resetDisplayRange();
