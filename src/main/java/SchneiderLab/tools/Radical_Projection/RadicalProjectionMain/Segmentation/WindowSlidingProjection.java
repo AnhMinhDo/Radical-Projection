@@ -1,4 +1,4 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;

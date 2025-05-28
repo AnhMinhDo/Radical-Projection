@@ -1,6 +1,5 @@
-package RadicalProjectionMain.CreateSideView;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.CreateSideView;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageConverter;

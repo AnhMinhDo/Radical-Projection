@@ -4,9 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>SchneiderLab</groupId>
+    <groupId>SchneiderLab.tools</groupId>
     <artifactId>Radical_Projection</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <name>Radical_Projection</name>
+    <description>Projection Tool for cell wall of Root Xylem </description>
+    <inceptionYear>2025</inceptionYear>
+    <organization>
+        <name>SchneiderLab</name>
+        <url>https://schneider-lab.de/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU General Public License 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Anh Minh Do</name>
+            <email>ahd.minh@gmail.com</email>
+        </developer>
+    </developers>
+    <contributors></contributors>
+    <mailingLists></mailingLists>
+    <scm></scm>
+    <issueManagement></issueManagement>
+    <ciManagement></ciManagement>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -74,7 +100,9 @@
             <artifactId>miglayout-swing</artifactId>
             <version>5.3</version>
         </dependency>
-
     </dependencies>
+    <build>
+
+    </build>
 
 </project>

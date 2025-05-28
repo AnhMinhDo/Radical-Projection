@@ -1,4 +1,4 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;

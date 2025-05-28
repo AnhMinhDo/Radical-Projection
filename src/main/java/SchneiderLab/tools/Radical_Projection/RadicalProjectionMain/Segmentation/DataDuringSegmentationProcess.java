@@ -1,10 +1,7 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
-
-import java.awt.*;
-import java.util.ArrayList;
 
 public class DataDuringSegmentationProcess {
     private  int width;

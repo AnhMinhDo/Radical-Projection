@@ -1,4 +1,4 @@
-package RadicalProjectionMain.ConvertCZIToTif;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.ConvertCZIToTif;
 
 import ij.IJ;
 import ij.ImagePlus;

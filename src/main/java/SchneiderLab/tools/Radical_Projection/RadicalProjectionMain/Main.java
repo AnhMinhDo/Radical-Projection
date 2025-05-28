@@ -1,4 +1,4 @@
-package RadicalProjectionMain;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain;
 
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -6,7 +6,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import javax.swing.*;
 
-import UIComponents.Radical_Projection_Tool;
+import SchneiderLab.tools.Radical_Projection.UIComponents.Radical_Projection_Tool;
 
 @Plugin(type = Command.class, menuPath = "Plugins > Radical Projection")
 public class Main implements Command {

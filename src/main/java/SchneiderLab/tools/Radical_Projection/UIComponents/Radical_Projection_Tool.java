@@ -1,4 +1,4 @@
-package UIComponents;
+package SchneiderLab.tools.Radical_Projection.UIComponents;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -6,7 +6,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
@@ -14,23 +13,19 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
-import RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
-import RadicalProjectionMain.CreateSideView.CreateSideView;
-import RadicalProjectionMain.Segmentation.CreateHybridStack;
-import RadicalProjectionMain.Segmentation.DataDuringSegmentationProcess;
-import RadicalProjectionMain.Segmentation.Reconstruction;
+import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
+import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.CreateSideView.CreateSideView;
+import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.CreateHybridStack;
+import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.DataDuringSegmentationProcess;
+import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.Reconstruction;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.PointRoi;
-import ij.process.ByteProcessor;
-import ij.process.ImageProcessor;
-import jdk.nashorn.internal.ir.Flags;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;

@@ -1,9 +1,7 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
 import ij.process.ImageProcessor;
 import ij.process.FloatProcessor;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Standalone implementation of Chamfer distance transform using Borgefors weights (3,4).

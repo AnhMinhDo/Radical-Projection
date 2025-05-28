@@ -1,22 +1,11 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
-import ij.ImagePlus;
-
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import inra.ijpb.binary.BinaryImages;
-import inra.ijpb.binary.distmap.ChamferDistanceTransform2DFloat;
-import inra.ijpb.binary.distmap.ChamferMask2D;
-import inra.ijpb.morphology.MinimaAndMaxima;
-import inra.ijpb.watershed.ExtendedMinimaWatershed;
 import io.scif.services.DatasetIOService;
-import net.imagej.Data;
 import net.imagej.Dataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.ops.OpService;
-import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -26,7 +15,6 @@ import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;

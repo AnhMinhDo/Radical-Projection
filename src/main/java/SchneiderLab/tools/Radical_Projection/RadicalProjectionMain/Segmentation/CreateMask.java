@@ -1,11 +1,8 @@
-package RadicalProjectionMain.Segmentation;
+package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import java.awt.*;
 import java.util.ArrayList;
