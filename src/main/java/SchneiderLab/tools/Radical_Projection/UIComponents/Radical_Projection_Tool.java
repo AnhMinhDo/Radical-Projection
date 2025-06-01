@@ -302,7 +302,8 @@ public class Radical_Projection_Tool extends JFrame {
 		button22.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				label13.setText("creating hybrid stack and smoothing");
+				label13.setForeground(Color.RED);
+				label13.setText("creating hybrid stack and smoothing...");
 				SwingWorker<DataDuringSegmentationProcess, Void> hybridStackWorker = new SwingWorker<DataDuringSegmentationProcess, Void>() {
 					@Override
 					protected DataDuringSegmentationProcess doInBackground() throws Exception {
@@ -330,7 +331,8 @@ public class Radical_Projection_Tool extends JFrame {
                         try {
                             dataAfterSmoothed = get();
 							IJ.showStatus("Finish processing");
-							label13.setText("Finish processing");
+							label13.setForeground(Color.GREEN);
+							label13.setText("Finish processing!");
 							button4.setEnabled(true);
                         } catch (InterruptedException | ExecutionException ex) {
                             throw new RuntimeException(ex);
