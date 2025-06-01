@@ -302,44 +302,51 @@ public class Radical_Projection_Tool extends JFrame {
 		button22.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				label13.setForeground(Color.RED);
-				label13.setText("creating hybrid stack and smoothing...");
-				SwingWorker<DataDuringSegmentationProcess, Void> hybridStackWorker = new SwingWorker<DataDuringSegmentationProcess, Void>() {
-					@Override
-					protected DataDuringSegmentationProcess doInBackground() throws Exception {
-						// get all file paths from table
-						DefaultTableModel model = (DefaultTableModel) table4.getModel();
-						int rowCount = model.getRowCount();
-						int sliderValue = slider1.getValue();
-						int windowSizeinMicroMeter = (int)spinner1.getValue();
-						int windowSize = Math.round(windowSizeinMicroMeter/0.2f);
-						double sigmaValueFilter = (double) spinner2.getValue();
-						int diameter = (int) spinner4.getValue();
-						ArrayList<Path> filePaths = new ArrayList<>();
-						for (int i = 0; i < rowCount; i++) {
-							filePaths.add(Paths.get(model.getValueAt(i, 0).toString()));
-						}
-						CreateHybridStack chs = new CreateHybridStack(context,filePaths.get(0),
+				DefaultTableModel model = (DefaultTableModel) table4.getModel();
+				int rowCount = model.getRowCount();
+				if(rowCount > 0){
+					label13.setForeground(Color.RED);
+					label13.setText("Creating hybrid stack and smoothing...");
+					SwingWorker<DataDuringSegmentationProcess, Void> hybridStackWorker = new SwingWorker<DataDuringSegmentationProcess, Void>() {
+						@Override
+						protected DataDuringSegmentationProcess doInBackground() throws Exception {
+							// get all file paths from table
+//						DefaultTableModel model = (DefaultTableModel) table4.getModel();
+//						int rowCount = model.getRowCount();
+							int sliderValue = slider1.getValue();
+							int windowSizeinMicroMeter = (int)spinner1.getValue();
+							int windowSize = Math.round(windowSizeinMicroMeter/0.2f);
+							double sigmaValueFilter = (double) spinner2.getValue();
+							int diameter = (int) spinner4.getValue();
+							ArrayList<Path> filePaths = new ArrayList<>();
+							for (int i = 0; i < rowCount; i++) {
+								filePaths.add(Paths.get(model.getValueAt(i, 0).toString()));
+							}
+							CreateHybridStack chs = new CreateHybridStack(context,filePaths.get(0),
 									sliderValue,
 									windowSize,
 									sigmaValueFilter,
 									diameter);
-						return chs.process();
-					}
-					@Override
-					protected void done() {
-                        try {
-                            dataAfterSmoothed = get();
-							IJ.showStatus("Finish processing");
-							label13.setForeground(Color.GREEN);
-							label13.setText("Finish processing!");
-							button4.setEnabled(true);
-                        } catch (InterruptedException | ExecutionException ex) {
-                            throw new RuntimeException(ex);
-                        }
-					}
-				};
-				hybridStackWorker.execute();
+							return chs.process();
+						}
+						@Override
+						protected void done() {
+							try {
+								dataAfterSmoothed = get();
+								IJ.showStatus("Processing finished");
+								label13.setForeground(Color.GREEN);
+								label13.setText("Processing finished");
+								button4.setEnabled(true);
+							} catch (InterruptedException | ExecutionException ex) {
+								throw new RuntimeException(ex);
+							}
+						}
+					};
+					hybridStackWorker.execute();
+				} else{
+					label13.setForeground(Color.BLACK);
+					label13.setText("Please add files to process");
+				}
 			}
 		});
 
