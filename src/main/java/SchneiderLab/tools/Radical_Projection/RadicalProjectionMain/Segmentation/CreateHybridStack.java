@@ -118,13 +118,13 @@ public class CreateHybridStack {
         ops.math().multiply(celluloseMultiplied, cellulose, weightCelluloseRatioFloatType);
         ops.math().multiply(ligninMultiplied, lignin, weightLigninRatioFloatType);
         ops.math().add(hybrid,celluloseMultiplied,ligninMultiplied);
-        ImageJFunctions.show(hybrid,"Hybrid image");
+//        ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         WindowSlidingProjection.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
-        ImageJFunctions.show(projectedStack, "Projected Stack");
+//        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
-//        ImageJFunctions.show(smoothedStack, "Smoothed Stack");
+        ImageJFunctions.show(smoothedStack, "Smoothed Stack");
         // add the data for the process to the data class
         DataDuringSegmentationProcess ddsp = new DataDuringSegmentationProcess(smoothedStack,
                 (int) width,
