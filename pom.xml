@@ -7,7 +7,7 @@
     <groupId>SchneiderLab.tools</groupId>
     <artifactId>Radical_Projection</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <url>https://github.com/AnhMinhDo/Radical-Projection</url>
     <name>Radical_Projection</name>
     <description>Projection Tool for cell wall of Root Xylem </description>
     <inceptionYear>2025</inceptionYear>
@@ -15,30 +15,60 @@
         <name>SchneiderLab</name>
         <url>https://schneider-lab.de/</url>
     </organization>
+
     <licenses>
         <license>
-            <name>GNU General Public License 3.0</name>
+            <name>GNU General Public License v3.0 only</name>
             <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
             <distribution>repo</distribution>
+            <comments>SPDX-License-Identifier: GPL-3.0-only</comments>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <name>Anh Minh Do</name>
             <email>ahd.minh@gmail.com</email>
         </developer>
     </developers>
-    <contributors></contributors>
-    <mailingLists></mailingLists>
-    <scm></scm>
-    <issueManagement></issueManagement>
-    <ciManagement></ciManagement>
+    <contributors>
+        <contributor>
+            <name>Anh Minh Do</name>
+            <email>ahd.minh@gmail.com</email>
+        </contributor>
+    </contributors>
+    <mailingLists>
+        <mailingList>
+            <name>Anh Minh Do</name>
+            <subscribe>mailto:ahd.minh@gmail.com</subscribe>
+            <unsubscribe>mailto:ahd.minh@gmail.com</unsubscribe>
+            <post>mailto:ahd.minh@gmail.com</post>
+        </mailingList>
+    </mailingLists>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <license.licenseName>GNU General Public License v3.0</license.licenseName>
+        <license.copyrightOwners>SchneiderLab</license.copyrightOwners>
+        <enforcer.skip>true</enforcer.skip>
+        <buildnumber.skip>true</buildnumber.skip>
     </properties>
+
+    <scm>
+        <connection>scm:git:https://github.com/AnhMinhDo/Radical-Projection.git</connection>
+        <developerConnection>scm:git:ssh://github.com/AnhMinhDo/Radical-Projection.git</developerConnection>
+        <url>https://github.com/AnhMinhDo/Radical-Projection</url>
+    </scm>
+    <issueManagement>
+        <system>None</system>  <!-- Explicitly mark as unused -->
+        <url>https://example.com/no-issue-tracker</url>
+    </issueManagement>
+    <ciManagement>
+        <system>None</system>  <!-- Explicitly mark as unused -->
+        <url>https://example.com/no-ci</url>
+    </ciManagement>
 
     <repositories>
         <repository>
@@ -55,29 +85,34 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej-legacy</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>imagej-common</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.imglib2</groupId>
             <artifactId>imglib2-algorithm</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>fr.inra.ijpb</groupId>
             <artifactId>MorphoLibJ_</artifactId>
             <version>1.6.4</version>
+            <scope>compile</scope>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -85,24 +120,40 @@
             <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.formdev/flatlaf -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>3.5.4</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-swing -->
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout-swing</artifactId>
             <version>5.3</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
-
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
