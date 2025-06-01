@@ -397,7 +397,8 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label6"
-								"text": "Status"
+								"text": "Status: "
+								"horizontalAlignment": 4
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 5"
 							} )
@@ -405,7 +406,7 @@ new FormModel {
 								name: "label13"
 								"text": "Waiting..."
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 5"
+								"value": "cell 1 5 3 1"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "button22"

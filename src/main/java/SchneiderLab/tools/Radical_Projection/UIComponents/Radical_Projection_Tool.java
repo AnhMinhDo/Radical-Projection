@@ -920,12 +920,13 @@ public class Radical_Projection_Tool extends JFrame {
 						panel12.add(label8, "cell 3 4");
 
 						//---- label6 ----
-						label6.setText("Status");
+						label6.setText("Status: ");
+						label6.setHorizontalAlignment(SwingConstants.RIGHT);
 						panel12.add(label6, "cell 0 5");
 
 						//---- label13 ----
 						label13.setText("Waiting...");
-						panel12.add(label13, "cell 1 5");
+						panel12.add(label13, "cell 1 5 3 1");
 
 						//---- button22 ----
 						button22.setText("Projection and smoothing");
