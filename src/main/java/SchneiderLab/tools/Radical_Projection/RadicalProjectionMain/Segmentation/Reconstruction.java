@@ -1,10 +1,12 @@
 package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.binary.distmap.ChamferDistanceTransform2DFloat;
 import inra.ijpb.binary.distmap.ChamferMask2D;
+import inra.ijpb.measure.region2d.Centroid;
 import inra.ijpb.morphology.MinimaAndMaxima;
 import inra.ijpb.watershed.ExtendedMinimaWatershed;
 import net.imglib2.RandomAccessibleInterval;
@@ -14,6 +16,10 @@ import net.imglib2.view.Views;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
+import static ij.IJ.debugMode;
 
 public class Reconstruction {
 private ArrayList<Point> coordinatesOutside;
@@ -35,11 +41,11 @@ private final RandomAccessibleInterval<FloatType> smoothedStack;
         Point pointForBackground = new Point((int)width-1, (int)height-1);
         // add all points to List
         coordinatesOutside.add(pointForBackground);
-        System.err.println(coordinatesOutside);
+        if(debugMode){ System.err.println(coordinatesOutside);}
         // Create innit mask
         CreateMask createMask = new CreateMask(coordinatesOutside,(int)width,(int)height,diameter);
         ImagePlus marker = createMask.drawMaskWithCoordinate();
-        marker.show();
+        if(debugMode){marker.show();}
         // invert marker
         ImagePlus markerInverted = marker.duplicate();
         markerInverted.getProcessor().invert();
@@ -47,7 +53,7 @@ private final RandomAccessibleInterval<FloatType> smoothedStack;
         ChamferDistanceTransform2DFloat cdtf = new ChamferDistanceTransform2DFloat(ChamferMask2D.BORGEFORS);
         FloatProcessor markerDistanceTransformed = cdtf.distanceMap(markerInverted.getProcessor());
         ImagePlus markerDistanceTransformedImagePlus = new ImagePlus("markerDistanceTransformed", markerDistanceTransformed);
-        markerDistanceTransformedImagePlus.show();
+        if(debugMode){markerDistanceTransformedImagePlus.show();}
         // Threshold: Keep pixels where distance <= diameter
         ImageProcessor grownRegionProcessor = markerDistanceTransformed.duplicate();
         float[] markerDistanceTransformedFloatArray = (float[]) markerDistanceTransformed.getPixels();
@@ -57,7 +63,7 @@ private final RandomAccessibleInterval<FloatType> smoothedStack;
         }
         // write the growRegion to imageplus
         ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
-        growRegion.show();
+        if(debugMode){growRegion.show();}
         // extract 1 slice and convert to Imagej1 Format
         RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 0); // dimension 2 = Z
         ImagePlus imageForReconstruction = ImageJFunctions.wrapFloat(slice2D, "mask for reconstruction");
@@ -68,11 +74,20 @@ private final RandomAccessibleInterval<FloatType> smoothedStack;
                 growRegion.getProcessor(),8);
         reconstructedProcessor.convertToByte(true);
         ImagePlus reconstructedImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
-        reconstructedImagePlus.show();
+        if(debugMode){reconstructedImagePlus.show();}
         // apply marker-based watershed using the labeled minima on the minima-imposed gradient image
         ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
                 reconstructedImagePlus, 255,8
         );
         segmentedImage.show();
+        // number of centroid based on the user number of input click,
+        // need to remove the first one which corresponding to the background
+        int numberOfCentroids = coordinatesOutside.size()-1;
+        // generate the label array starting from 2 to (2+numberOfCentroid-1)
+        int[] labels = IntStream.range(2,2+numberOfCentroids).toArray();
+        if(debugMode){IJ.log(Arrays.toString(labels));}
+        // calculate the centroid of the newly segmented
+        double[][] centroids = Centroid.centroids(segmentedImage.getProcessor(),labels);
+        if(debugMode){IJ.log(Arrays.deepToString(centroids));}
     }
 }
