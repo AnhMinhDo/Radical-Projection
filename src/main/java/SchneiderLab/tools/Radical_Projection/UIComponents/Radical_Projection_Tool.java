@@ -399,7 +399,7 @@ public class Radical_Projection_Tool extends JFrame {
 					@Override
 					protected Void doInBackground() throws Exception {
 						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
-						recon.process();
+						recon.process1Slide();
 						return null;
 					}
 					@Override
