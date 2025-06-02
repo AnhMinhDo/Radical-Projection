@@ -428,6 +428,12 @@ new FormModel {
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 2 6"
 							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "button21"
+								"text": "Process Whole Stack"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 3 6"
+							} )
 						}, new FormLayoutConstraints( null ) {
 							"title": "Parameters"
 						} )

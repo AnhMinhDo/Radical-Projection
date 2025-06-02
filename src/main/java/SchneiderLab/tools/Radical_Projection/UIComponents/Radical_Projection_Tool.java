@@ -478,6 +478,7 @@ public class Radical_Projection_Tool extends JFrame {
 		button22 = new JButton();
 		button4 = new JButton();
 		button3 = new JButton();
+		button21 = new JButton();
 		panel6 = new JPanel();
 		button8 = new JButton();
 		button9 = new JButton();
@@ -948,6 +949,10 @@ public class Radical_Projection_Tool extends JFrame {
 						button3.setText("Watershed");
 						button3.setEnabled(false);
 						panel12.add(button3, "cell 2 6");
+
+						//---- button21 ----
+						button21.setText("Process Whole Stack");
+						panel12.add(button21, "cell 3 6");
 					}
 					tabbedPane4.addTab("Parameters", panel12);
 				}
@@ -1230,6 +1235,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private JButton button22;
 	private JButton button4;
 	private JButton button3;
+	private JButton button21;
 	private JPanel panel6;
 	private JButton button8;
 	private JButton button9;
