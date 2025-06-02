@@ -44,11 +44,11 @@ private Point pointForBackground;
 //        pointForBackground = new Point((int)width-1, (int)height-1);
         // add all points to List
         coordinatesOutside.add(pointForBackground);
-        if(debugMode){ System.err.println(coordinatesOutside);}
+//        if(debugMode){ System.err.println(coordinatesOutside);}
         // Create innit mask
         CreateMask createMask = new CreateMask(coordinatesOutside,(int)width,(int)height,diameter);
         ImagePlus marker = createMask.drawMaskWithCoordinate();
-        if(debugMode){marker.show();}
+//        if(debugMode){marker.show();}
         // invert marker
         ImagePlus markerInverted = marker.duplicate();
         markerInverted.getProcessor().invert();
@@ -56,7 +56,7 @@ private Point pointForBackground;
         ChamferDistanceTransform2DFloat cdtf = new ChamferDistanceTransform2DFloat(ChamferMask2D.BORGEFORS);
         FloatProcessor markerDistanceTransformed = cdtf.distanceMap(markerInverted.getProcessor());
         ImagePlus markerDistanceTransformedImagePlus = new ImagePlus("markerDistanceTransformed", markerDistanceTransformed);
-        if(debugMode){markerDistanceTransformedImagePlus.show();}
+//        if(debugMode){markerDistanceTransformedImagePlus.show();}
         // Threshold: Keep pixels where distance <= diameter
         ImageProcessor grownRegionProcessor = markerDistanceTransformed.duplicate();
         float[] markerDistanceTransformedFloatArray = (float[]) markerDistanceTransformed.getPixels();
@@ -66,7 +66,7 @@ private Point pointForBackground;
         }
         // write the growRegion to imageplus
         ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
-        if(debugMode){growRegion.show();}
+//        if(debugMode){growRegion.show();}
         // extract 1 slice and convert to Imagej1 Format
         RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 0); // dimension 2 = Z
         ImagePlus imageForReconstruction = ImageJFunctions.wrapFloat(slice2D, "mask for reconstruction");
@@ -77,7 +77,7 @@ private Point pointForBackground;
                 growRegion.getProcessor(),8);
         reconstructedProcessor.convertToByte(true);
         ImagePlus reconstructedImagePlus = new ImagePlus("reconstructed Image", reconstructedProcessor);
-        if(debugMode){reconstructedImagePlus.show();}
+//        if(debugMode){reconstructedImagePlus.show();}
         // apply marker-based watershed using the labeled minima on the minima-imposed gradient image
         ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
                 reconstructedImagePlus, 255,8
@@ -88,10 +88,10 @@ private Point pointForBackground;
 //        int numberOfCentroids = coordinatesOutside.size()-1;
 //        // generate the label array starting from 2 to (2+numberOfCentroid-1)
 //        int[] labels = IntStream.range(2,2+numberOfCentroids).toArray();
-//        if(debugMode){IJ.log(Arrays.toString(labels));}
+////        if(debugMode){IJ.log(Arrays.toString(labels));}
 //        // calculate the centroid of the newly segmented
 //        double[][] centroids = Centroid.centroids(segmentedImage.getProcessor(),labels);
-//        if(debugMode){IJ.log(Arrays.deepToString(centroids));}
+////        if(debugMode){IJ.log(Arrays.deepToString(centroids));}
 //        // remove the old coordinates
 //        coordinatesOutside.clear();
 //        // round the centroid values and convert to int
@@ -101,15 +101,17 @@ private Point pointForBackground;
 //                centroidsInt[i][j] = (int) Math.round(centroids[i][j]);
 //            }
 //        }
+//        System.err.println("new centroids: " + Arrays.deepToString(centroidsInt));
 //        // Create new Points from the centroid
 //        for (int i = 0; i < centroidsInt.length; i++) {
 //            coordinatesOutside.add(new Point(centroidsInt[i][0],centroidsInt[i][1]));
 //        }
+//        System.err.println("update coordinate object: " + coordinatesOutside);
     }
 
-    public ImageStack processWholeStack(){
+    public void processWholeStack(){
         ImageStack finalStack = new ImageStack(width, height);
-
+        System.err.println("start the process");
         for (int currentSlice = 0; currentSlice < smoothedStack.dimension(2); currentSlice++) {
             // add background point
             coordinatesOutside.add(pointForBackground);
@@ -149,9 +151,6 @@ private Point pointForBackground;
             ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
                     reconstructedImagePlus, 255,8
             );
-//            segmentedImage.show();
-            // add the image to the stack
-            finalStack.addSlice(segmentedImage.getProcessor());
             // number of centroid based on the user number of input click,
             // need to remove the first one which corresponding to the background
             int numberOfCentroids = coordinatesOutside.size()-1;
@@ -174,7 +173,10 @@ private Point pointForBackground;
             for (int row = 0; row < centroidsInt.length; row++) {
                 coordinatesOutside.add(new Point(centroidsInt[row][0],centroidsInt[row][1]));
             }
+            // add the image to the stack
+            finalStack.addSlice(segmentedImage.getProcessor());
         }
-        return finalStack;
+        ImagePlus finalImagePlus = new ImagePlus("Final Stack", finalStack);
+        finalImagePlus.show();
     }
 }
