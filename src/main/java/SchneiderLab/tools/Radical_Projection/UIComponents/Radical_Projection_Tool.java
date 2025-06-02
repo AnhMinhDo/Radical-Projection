@@ -45,6 +45,8 @@ public class Radical_Projection_Tool extends JFrame {
 	private Context context;
 	private DataDuringSegmentationProcess dataAfterSmoothed;
 	private ArrayList<Point> coordinates = new ArrayList<>() ;
+	private Reconstruction segmentationObject;
+	private ArrayList<Point> coordinatesBatch = new ArrayList<>() ;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
@@ -388,7 +390,6 @@ public class Radical_Projection_Tool extends JFrame {
 					}
 				});
 				}
-				//TODO: AnhMinh: create state for the window used to show the image, update the window when the user click a second time when they update the data
 		});
 
 		// button Watershed to segment the image
@@ -399,16 +400,41 @@ public class Radical_Projection_Tool extends JFrame {
 					@Override
 					protected Void doInBackground() throws Exception {
 						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
+						segmentationObject = recon;
 						recon.process1Slide();
 						return null;
 					}
 					@Override
 					protected void done(){
+						coordinatesBatch.clear();
+						coordinatesBatch.addAll(coordinates);
 						coordinates.clear();
 						button3.setEnabled(false);
 					}
 				};
 				segmentationWorker.execute();
+			}
+		});
+
+		button21.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				label13.setForeground(Color.RED);
+				label13.setText("Processing whole stack...");
+				SwingWorker<Void, Void> batchSegmentationWorker = new SwingWorker<Void, Void>() {
+					@Override
+					protected Void doInBackground() throws Exception {
+						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinatesBatch);
+						recon.processWholeStack();
+						return null;
+					}
+					@Override
+					protected void done(){
+						label13.setForeground(Color.GREEN);
+						label13.setText("Processing whole stack finished");
+					}
+				};
+				batchSegmentationWorker.execute();
 			}
 		});
 	}
