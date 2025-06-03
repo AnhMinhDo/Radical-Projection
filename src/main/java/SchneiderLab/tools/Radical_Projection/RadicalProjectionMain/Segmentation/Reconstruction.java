@@ -154,7 +154,7 @@ private Point pointForBackground;
             // number of centroid based on the user number of input click,
             // need to remove the first one which corresponding to the background
             int numberOfCentroids = coordinatesOutside.size()-1;
-            // generate the label array starting from 2 to (2+numberOfCentroid-1)
+            // generate the label array [2,2+numberOfCentroid)
             int[] labels = IntStream.range(2,2+numberOfCentroids).toArray();
             if(debugMode){IJ.log(Arrays.toString(labels));}
             // calculate the centroid of the newly segmented
