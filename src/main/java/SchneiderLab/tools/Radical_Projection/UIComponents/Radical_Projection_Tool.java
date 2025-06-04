@@ -21,6 +21,7 @@ import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
+import ij.gui.ImageWindow;
 import ij.gui.PointRoi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -376,6 +377,20 @@ public class Radical_Projection_Tool extends JFrame {
 				PointRoi pointRoi = new PointRoi();
 				impInByte.setRoi(pointRoi);
 				ImageCanvas canvas = impInByte.getCanvas();
+				double magnificationLevel = 4.0;
+				canvas.setMagnification(magnificationLevel);
+				// Get screen dimensions
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				int screenWidth = screenSize.width;
+				int screenHeight = screenSize.height;
+				// Calculate window size for 200% zoom
+				int imgWidth = impInByte.getWidth() * (int) magnificationLevel;
+				int imgHeight = impInByte.getHeight() * (int) magnificationLevel;
+				// position the window at  bottom left
+				int xlocation = 10;
+				int ylocation = screenHeight-imgHeight-((int)screenHeight*2/100); // screenHeight*5/100 to create a little bit space
+				ImageWindow window = impInByte.getWindow();
+				window.setLocationAndSize( xlocation,ylocation ,imgWidth,imgHeight);
 
 				canvas.addMouseListener(new MouseAdapter() {
 					@Override
