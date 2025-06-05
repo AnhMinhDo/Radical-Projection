@@ -33,6 +33,7 @@ import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
+import schneiderlab.tools.radicalprojection.uiaction.AddFilePathFromDirToTable;
 import schneiderlab.tools.radicalprojection.uiaction.AddFilePathToTable;
 import schneiderlab.tools.radicalprojection.uiaction.RemoveFilePathFromTable;
 
@@ -110,16 +111,6 @@ public class Radical_Projection_Tool extends JFrame {
 		button2.addActionListener(new AddFilePathToTable(table1, Radical_Projection_Tool.this));
 
 		// Action for REMOVE Button in step 1
-//		button6.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				int selectedRow = table1.getSelectedRow();
-//				if (selectedRow != -1) {
-//					DefaultTableModel model = (DefaultTableModel) table1.getModel();
-//					model.removeRow(selectedRow);
-//				}
-//			}
-//		});
 		button6.addActionListener(new RemoveFilePathFromTable(table1));
 
 		// tooltip to view full file path in step 1
@@ -136,24 +127,25 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 
 		// button add folder for create side view, step 1
-		button15.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File dir = chooser.getSelectedFile();
-					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
-					if (files != null) {
-						DefaultTableModel model = (DefaultTableModel) table1.getModel();
-						for (File file : files) {
-							model.addRow(new Object[]{file.getAbsolutePath()});
-						}
-					}
-				}
-			}
-		});
+//		button15.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser();
+//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
+//				if (returnVal == JFileChooser.APPROVE_OPTION) {
+//					File dir = chooser.getSelectedFile();
+//					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
+//					if (files != null) {
+//						DefaultTableModel model = (DefaultTableModel) table1.getModel();
+//						for (File file : files) {
+//							model.addRow(new Object[]{file.getAbsolutePath()});
+//						}
+//					}
+//				}
+//			}
+//		});
+		button15.addActionListener(new AddFilePathFromDirToTable(table1, Radical_Projection_Tool.this));
 		// button clear all in table for create side view, step 1
 		button16.addActionListener(new ActionListener() {
 			@Override
@@ -223,16 +215,6 @@ public class Radical_Projection_Tool extends JFrame {
 		button17.addActionListener(new AddFilePathToTable(table4,Radical_Projection_Tool.this));
 
 		// Action for REMOVE Button in segmentation step
-//		button19.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				int selectedRow = table4.getSelectedRow();
-//				if (selectedRow != -1) {
-//					DefaultTableModel model = (DefaultTableModel) table4.getModel();
-//					model.removeRow(selectedRow);
-//				}
-//			}
-//		});
 		button19.addActionListener(new RemoveFilePathFromTable(table4));
 
 		// tooltip to view full file path in segmentation step
@@ -249,24 +231,25 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 
 		// button add folder for segmentation step
-		button18.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File dir = chooser.getSelectedFile();
-					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
-					if (files != null) {
-						DefaultTableModel model = (DefaultTableModel) table4.getModel();
-						for (File file : files) {
-							model.addRow(new Object[]{file.getAbsolutePath()});
-						}
-					}
-				}
-			}
-		});
+//		button18.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser();
+//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
+//				if (returnVal == JFileChooser.APPROVE_OPTION) {
+//					File dir = chooser.getSelectedFile();
+//					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
+//					if (files != null) {
+//						DefaultTableModel model = (DefaultTableModel) table4.getModel();
+//						for (File file : files) {
+//							model.addRow(new Object[]{file.getAbsolutePath()});
+//						}
+//					}
+//				}
+//			}
+//		});
+		button18.addActionListener(new AddFilePathFromDirToTable(table4, Radical_Projection_Tool.this));
 		// button clear all in table for segmentation step
 		button20.addActionListener(new ActionListener() {
 			@Override
