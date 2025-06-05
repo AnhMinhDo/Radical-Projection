@@ -1,6 +1,5 @@
 package schneiderlab.tools.radicalprojection.uiaction;
 
-import schneiderlab.tools.radicalprojection.userinterfacecomponents.Radical_Projection_Tool;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
