@@ -34,6 +34,7 @@ import net.imglib2.view.Views;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
 import schneiderlab.tools.radicalprojection.uiaction.AddFilePathToTable;
+import schneiderlab.tools.radicalprojection.uiaction.RemoveFilePathFromTable;
 
 /*
  * Created by JFormDesigner on Fri Apr 04 02:15:10 CEST 2025
@@ -107,17 +108,19 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 		// Action for ADD button in step 1
 		button2.addActionListener(new AddFilePathToTable(table1, Radical_Projection_Tool.this));
+
 		// Action for REMOVE Button in step 1
-		button6.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedRow = table1.getSelectedRow();
-				if (selectedRow != -1) {
-					DefaultTableModel model = (DefaultTableModel) table1.getModel();
-					model.removeRow(selectedRow);
-				}
-			}
-		});
+//		button6.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				int selectedRow = table1.getSelectedRow();
+//				if (selectedRow != -1) {
+//					DefaultTableModel model = (DefaultTableModel) table1.getModel();
+//					model.removeRow(selectedRow);
+//				}
+//			}
+//		});
+		button6.addActionListener(new RemoveFilePathFromTable(table1));
 
 		// tooltip to view full file path in step 1
 		table1.addMouseMotionListener(new MouseMotionAdapter() {
@@ -218,17 +221,19 @@ public class Radical_Projection_Tool extends JFrame {
 
 		// Action for ADD button in segmentation step
 		button17.addActionListener(new AddFilePathToTable(table4,Radical_Projection_Tool.this));
+
 		// Action for REMOVE Button in segmentation step
-		button19.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedRow = table4.getSelectedRow();
-				if (selectedRow != -1) {
-					DefaultTableModel model = (DefaultTableModel) table4.getModel();
-					model.removeRow(selectedRow);
-				}
-			}
-		});
+//		button19.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				int selectedRow = table4.getSelectedRow();
+//				if (selectedRow != -1) {
+//					DefaultTableModel model = (DefaultTableModel) table4.getModel();
+//					model.removeRow(selectedRow);
+//				}
+//			}
+//		});
+		button19.addActionListener(new RemoveFilePathFromTable(table4));
 
 		// tooltip to view full file path in segmentation step
 		table4.addMouseMotionListener(new MouseMotionAdapter() {
