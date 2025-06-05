@@ -33,6 +33,7 @@ import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
+import schneiderlab.tools.radicalprojection.uiaction.AddFilePathToTable;
 
 /*
  * Created by JFormDesigner on Fri Apr 04 02:15:10 CEST 2025
@@ -105,19 +106,7 @@ public class Radical_Projection_Tool extends JFrame {
 			}
 		});
 		// Action for ADD button in step 1
-		button2.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					String path = chooser.getSelectedFile().getAbsolutePath();
-					DefaultTableModel model = (DefaultTableModel) table1.getModel();
-					model.addRow(new Object[]{path});
-				}
-			}
-		});
+		button2.addActionListener(new AddFilePathToTable(table1, Radical_Projection_Tool.this));
 		// Action for REMOVE Button in step 1
 		button6.addActionListener(new ActionListener() {
 			@Override
@@ -228,19 +217,7 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 
 		// Action for ADD button in segmentation step
-		button17.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					String path = chooser.getSelectedFile().getAbsolutePath();
-					DefaultTableModel model = (DefaultTableModel) table4.getModel();
-					model.addRow(new Object[]{path});
-				}
-			}
-		});
+		button17.addActionListener(new AddFilePathToTable(table4,Radical_Projection_Tool.this));
 		// Action for REMOVE Button in segmentation step
 		button19.addActionListener(new ActionListener() {
 			@Override
