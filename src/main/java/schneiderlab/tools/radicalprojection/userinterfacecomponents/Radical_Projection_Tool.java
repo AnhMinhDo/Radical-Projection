@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.UIComponents;
+package schneiderlab.tools.radicalprojection.userinterfacecomponents;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,11 +13,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
-import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.ConvertCZIToTif.CZIProcessor;
-import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.CreateSideView.CreateSideView;
-import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.CreateHybridStack;
-import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.DataDuringSegmentationProcess;
-import SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation.Reconstruction;
+import schneiderlab.tools.radicalprojection.imageprocessor.core.convertczitotif.CZIProcessor;
+import schneiderlab.tools.radicalprojection.imageprocessor.core.createsideview.CreateSideView;
+import schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation.CreateHybridStack;
+import schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation.DataDuringSegmentationProcess;
+import schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation.Reconstruction;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;

@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
+package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
 
 import io.scif.services.DatasetIOService;
 import net.imagej.Dataset;

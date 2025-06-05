@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
+package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -13,7 +13,6 @@ import inra.ijpb.binary.distmap.ChamferMask2D;
 import inra.ijpb.measure.region2d.Centroid;
 import inra.ijpb.morphology.MinimaAndMaxima;
 import inra.ijpb.watershed.ExtendedMinimaWatershed;
-import io.scif.jj2000.j2k.roi.encoder.ROI;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import static ij.IJ.COLOR;
 import static ij.IJ.debugMode;
 
 public class Reconstruction {

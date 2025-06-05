@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Utils;
+package schneiderlab.tools.radicalprojection.imageprocessor.core.utils;
 
 import ij.IJ;
 

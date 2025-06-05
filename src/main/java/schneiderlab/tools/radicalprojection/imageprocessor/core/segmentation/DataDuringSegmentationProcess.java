@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation;
+package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;

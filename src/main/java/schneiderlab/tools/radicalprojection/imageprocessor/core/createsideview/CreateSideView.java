@@ -1,4 +1,4 @@
-package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.CreateSideView;
+package schneiderlab.tools.radicalprojection.imageprocessor.core.createsideview;
 
 import ij.IJ;
 import io.scif.img.ImgSaver;
