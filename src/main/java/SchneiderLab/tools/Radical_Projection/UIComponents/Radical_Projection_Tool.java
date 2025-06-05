@@ -22,6 +22,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
+import ij.gui.Overlay;
 import ij.gui.PointRoi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -46,8 +47,9 @@ public class Radical_Projection_Tool extends JFrame {
 	private Context context;
 	private DataDuringSegmentationProcess dataAfterSmoothed;
 	private ArrayList<Point> coordinates = new ArrayList<>() ;
-	private Reconstruction segmentationObject;
 	private ArrayList<Point> coordinatesBatch = new ArrayList<>() ;
+	private Overlay overlaySegmentation;
+	private ImagePlus impInByte;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
@@ -370,7 +372,7 @@ public class Radical_Projection_Tool extends JFrame {
 				// Convert to ImagePlus
 				ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
 				impFloat.resetDisplayRange();
-				ImagePlus impInByte = new ImagePlus("impInByte", impFloat.getProcessor().convertToByte(true));
+				impInByte = new ImagePlus("impInByte", impFloat.getProcessor().convertToByte(true));
 				impFloat.resetDisplayRange();
 				impInByte.show();
 				// Create a new PointRoi to collect points
@@ -415,8 +417,7 @@ public class Radical_Projection_Tool extends JFrame {
 					@Override
 					protected Void doInBackground() throws Exception {
 						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
-						segmentationObject = recon;
-						recon.process1Slide();
+						overlaySegmentation = recon.process1Slide();
 						return null;
 					}
 					@Override
@@ -425,12 +426,15 @@ public class Radical_Projection_Tool extends JFrame {
 						coordinatesBatch.addAll(coordinates);
 						coordinates.clear();
 						button3.setEnabled(false);
+						impInByte.setOverlay(overlaySegmentation);
+						impInByte.updateAndDraw();
 					}
 				};
 				segmentationWorker.execute();
 			}
 		});
 
+		// button processing wholeStack
 		button21.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
