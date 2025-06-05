@@ -3,6 +3,9 @@ package SchneiderLab.tools.Radical_Projection.RadicalProjectionMain.Segmentation
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.gui.Overlay;
+import ij.gui.Roi;
+import ij.plugin.filter.ThresholdToSelection;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.binary.distmap.ChamferDistanceTransform2DFloat;
@@ -10,6 +13,7 @@ import inra.ijpb.binary.distmap.ChamferMask2D;
 import inra.ijpb.measure.region2d.Centroid;
 import inra.ijpb.morphology.MinimaAndMaxima;
 import inra.ijpb.watershed.ExtendedMinimaWatershed;
+import io.scif.jj2000.j2k.roi.encoder.ROI;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import static ij.IJ.COLOR;
 import static ij.IJ.debugMode;
 
 public class Reconstruction {
@@ -39,7 +44,7 @@ private Point pointForBackground;
         pointForBackground = new Point((int)width-1, (int)height-1);
     }
 
-    public void process1Slide(){
+    public Overlay process1Slide(){
 //        // create a mask based on given coordinates
 //        pointForBackground = new Point((int)width-1, (int)height-1);
         // add all points to List
@@ -83,6 +88,19 @@ private Point pointForBackground;
                 reconstructedImagePlus, 255,8
         );
         segmentedImage.show();
+        // Overlay the segmentation on to the original image
+        ImageProcessor segmentedImageProcessor = segmentedImage.getProcessor();
+        segmentedImageProcessor.setThreshold(1,4,ImageProcessor.NO_LUT_UPDATE);
+        ThresholdToSelection ts = new ThresholdToSelection();
+        Roi maskRoi = ts.convert(segmentedImageProcessor);
+        // Apply overlay to original image
+        Overlay overlay = new Overlay(maskRoi);
+        overlay.setStrokeColor(Color.RED);
+        imageForReconstruction.setOverlay(overlay);
+        imageForReconstruction.updateAndDraw();
+        imageForReconstruction.show();
+        return overlay;
+
 //        // number of centroid based on the user number of input click,
 //        // need to remove the first one which corresponding to the background
 //        int numberOfCentroids = coordinatesOutside.size()-1;
