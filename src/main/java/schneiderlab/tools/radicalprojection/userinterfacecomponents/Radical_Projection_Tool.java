@@ -313,7 +313,7 @@ public class Radical_Projection_Tool extends JFrame {
 				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				int screenWidth = screenSize.width;
 				int screenHeight = screenSize.height;
-				// Calculate window size for 200% zoom
+				// Calculate window size for zoom
 				int imgWidth = impInByte.getWidth() * (int) magnificationLevel;
 				int imgHeight = impInByte.getHeight() * (int) magnificationLevel;
 				// position the window at  bottom left
