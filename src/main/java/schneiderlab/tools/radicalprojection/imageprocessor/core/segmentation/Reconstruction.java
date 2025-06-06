@@ -85,7 +85,7 @@ private Point pointForBackground;
         ImagePlus segmentedImage = ExtendedMinimaWatershed.extendedMinimaWatershed(
                 reconstructedImagePlus, 255,8
         );
-        segmentedImage.show();
+//        segmentedImage.show();
         // Overlay the segmentation on to the original image
         ImageProcessor segmentedImageProcessor = segmentedImage.getProcessor();
         segmentedImageProcessor.setThreshold(1,4,ImageProcessor.NO_LUT_UPDATE);
