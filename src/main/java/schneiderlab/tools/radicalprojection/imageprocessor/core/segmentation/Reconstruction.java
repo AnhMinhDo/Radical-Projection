@@ -71,7 +71,7 @@ private Point pointForBackground;
         ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
 //        if(debugMode){growRegion.show();}
         // extract 1 slice and convert to Imagej1 Format
-        RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 0); // dimension 2 = Z
+        RandomAccessibleInterval<FloatType> slice2D = Views.hyperSlice(smoothedStack, 2, 0); // dimension 2 is Z
         ImagePlus imageForReconstruction = ImageJFunctions.wrapFloat(slice2D, "mask for reconstruction");
         // Make sure the display range is set properly for float images
         imageForReconstruction.resetDisplayRange();
@@ -94,9 +94,9 @@ private Point pointForBackground;
         // Apply overlay to original image
         Overlay overlay = new Overlay(maskRoi);
         overlay.setStrokeColor(Color.RED);
-        imageForReconstruction.setOverlay(overlay);
-        imageForReconstruction.updateAndDraw();
-        imageForReconstruction.show();
+//        imageForReconstruction.setOverlay(overlay);
+//        imageForReconstruction.updateAndDraw();
+//        imageForReconstruction.show();
         return overlay;
 
 //        // number of centroid based on the user number of input click,
