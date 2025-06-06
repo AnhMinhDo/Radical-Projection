@@ -2,7 +2,6 @@ package schneiderlab.tools.radicalprojection.userinterfacecomponents;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -127,24 +126,6 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 
 		// button add folder for create side view, step 1
-//		button15.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser();
-//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-//				if (returnVal == JFileChooser.APPROVE_OPTION) {
-//					File dir = chooser.getSelectedFile();
-//					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
-//					if (files != null) {
-//						DefaultTableModel model = (DefaultTableModel) table1.getModel();
-//						for (File file : files) {
-//							model.addRow(new Object[]{file.getAbsolutePath()});
-//						}
-//					}
-//				}
-//			}
-//		});
 		button15.addActionListener(new AddFilePathFromDirToTable(table1, Radical_Projection_Tool.this));
 		// button clear all in table for create side view, step 1
 		button16.addActionListener(new ActionListener() {
@@ -231,24 +212,6 @@ public class Radical_Projection_Tool extends JFrame {
 		});
 
 		// button add folder for segmentation step
-//		button18.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser();
-//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//				int returnVal = chooser.showOpenDialog(Radical_Projection_Tool.this);
-//				if (returnVal == JFileChooser.APPROVE_OPTION) {
-//					File dir = chooser.getSelectedFile();
-//					File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".tif"));
-//					if (files != null) {
-//						DefaultTableModel model = (DefaultTableModel) table4.getModel();
-//						for (File file : files) {
-//							model.addRow(new Object[]{file.getAbsolutePath()});
-//						}
-//					}
-//				}
-//			}
-//		});
 		button18.addActionListener(new AddFilePathFromDirToTable(table4, Radical_Projection_Tool.this));
 		// button clear all in table for segmentation step
 		button20.addActionListener(new ActionListener() {
@@ -355,10 +318,10 @@ public class Radical_Projection_Tool extends JFrame {
 				int imgHeight = impInByte.getHeight() * (int) magnificationLevel;
 				// position the window at  bottom left
 				int xlocation = 10;
-				int ylocation = screenHeight-imgHeight-((int)screenHeight*2/100); // screenHeight*5/100 to create a little bit space
+				int ylocation = screenHeight-imgHeight-((int)screenHeight*4/100); // screenHeight*4/100 to create a little bit space
 				ImageWindow window = impInByte.getWindow();
 				window.setLocationAndSize( xlocation,ylocation ,imgWidth,imgHeight);
-
+				// add eventListener to canvas
 				canvas.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
