@@ -347,11 +347,15 @@ new FormModel {
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label3"
+								"text": "slice index for tuning"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 2"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
 								name: "spinner3"
+								"model": new javax.swing.SpinnerNumberModel {
+									minimum: 0
+								}
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 2"
 							} )

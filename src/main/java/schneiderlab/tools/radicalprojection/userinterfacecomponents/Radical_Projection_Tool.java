@@ -52,6 +52,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private ArrayList<Point> coordinatesBatch = new ArrayList<>() ;
 	private Overlay overlaySegmentation;
 	private ImagePlus impInByte;
+	private ImagePlus finalSegmentation;
 
 	public Radical_Projection_Tool(Context context) {
 		initComponents();
@@ -288,7 +289,8 @@ public class Radical_Projection_Tool extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				RandomAccessibleInterval<FloatType>	smoothedStack = dataAfterSmoothed.getSmoothStack();
-				RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,0);
+				int slideForTuning = (int)spinner3.getValue();
+				RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,slideForTuning);
 				// Copy the view to a new Img<FloatType>
 				// Create copy using cursors
 				Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(just1Slide));
@@ -344,7 +346,8 @@ public class Radical_Projection_Tool extends JFrame {
 				SwingWorker<Void, Void> segmentationWorker = new SwingWorker<Void, Void>() {
 					@Override
 					protected Void doInBackground() throws Exception {
-						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates);
+						int slideForTuning = (int)spinner3.getValue();
+						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinates,slideForTuning);
 						overlaySegmentation = recon.process1Slide();
 						return null;
 					}
@@ -371,14 +374,16 @@ public class Radical_Projection_Tool extends JFrame {
 				SwingWorker<Void, Void> batchSegmentationWorker = new SwingWorker<Void, Void>() {
 					@Override
 					protected Void doInBackground() throws Exception {
-						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinatesBatch);
-						recon.processWholeStack();
+						int slideForTuning = (int)spinner3.getValue();
+						Reconstruction recon = new Reconstruction(dataAfterSmoothed,coordinatesBatch,slideForTuning);
+						finalSegmentation = recon.processWholeStack();
 						return null;
 					}
 					@Override
 					protected void done(){
 						label13.setForeground(Color.GREEN);
 						label13.setText("Processing whole stack finished");
+						finalSegmentation.show();
 					}
 				};
 				batchSegmentationWorker.execute();
@@ -869,7 +874,13 @@ public class Radical_Projection_Tool extends JFrame {
 						//---- spinner2 ----
 						spinner2.setModel(new SpinnerNumberModel(2.0, 0.0, 5.0, 0.1));
 						panel12.add(spinner2, "cell 1 1");
+
+						//---- label3 ----
+						label3.setText("slice index for tuning");
 						panel12.add(label3, "cell 0 2");
+
+						//---- spinner3 ----
+						spinner3.setModel(new SpinnerNumberModel(0, 0, null, 1));
 						panel12.add(spinner3, "cell 1 2");
 
 						//---- label4 ----
