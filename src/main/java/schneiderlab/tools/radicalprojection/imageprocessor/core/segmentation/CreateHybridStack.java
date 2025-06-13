@@ -124,6 +124,7 @@ public class CreateHybridStack {
 //        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
+
         ImageJFunctions.show(smoothedStack, "Smoothed Stack");
         // add the data for the process to the data class
         DataDuringSegmentationProcess ddsp = new DataDuringSegmentationProcess(smoothedStack,
