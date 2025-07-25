@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.uiaction;
+package schneiderlab.tools.radialprojection.controllers.uiaction;
 
 
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
+package schneiderlab.tools.radialprojection.imageprocessor.core.segmentation;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -17,12 +17,12 @@ public class CreateMask {
     public CreateMask(ArrayList<Point> coordinates,
                       int width,
                       int height,
-                      int diameter){
+                      int radius){
         this.coordinates = coordinates;
         this.width = width;
         this.height = height;
-        this.diameter = diameter;
-        this.radius = diameter/2;
+        this.diameter = radius*2;
+        this.radius = radius;
     }
 
     public ImagePlus drawMaskWithCoordinate(){

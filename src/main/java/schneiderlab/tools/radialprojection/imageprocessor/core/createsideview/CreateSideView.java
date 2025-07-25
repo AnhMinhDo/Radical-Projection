@@ -1,7 +1,6 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.createsideview;
+package schneiderlab.tools.radialprojection.imageprocessor.core.createsideview;
 
 import ij.IJ;
-import io.scif.img.ImgSaver;
 import io.scif.services.DatasetIOService;
 import net.imagej.Dataset;
 import net.imagej.ImgPlus;
@@ -49,7 +48,7 @@ public class CreateSideView {
 
     }
 
-    public Path process() throws Exception {
+    public Img<UnsignedShortType> process() throws Exception {
         // get the status Service
         StatusService statusService = context.getService(StatusService.class);
         // Get DatasetService and UIService from context
@@ -173,12 +172,12 @@ public class CreateSideView {
 //        for(RandomAccessibleInterval<UnsignedShortType> result : processedChannels){
 //            ImageJFunctions.show(result);
 //        }
-        IJ.showStatus("saving ouput of: "+filePath.getFileName().toString());
+//        IJ.showStatus("saving ouput of: "+filePath.getFileName().toString());
         // Generate new output file path
-        String parentDir = filePath.getParent().toString();
-        String fileNameWithoutExtension = filePath.getFileName().toString().replaceFirst("[.][^.]+$", "");
-        String outputString = parentDir + File.separator + fileNameWithoutExtension + "_sideview.tif";
-        Path newOutputFilePath = Paths.get(outputString);
+//        String parentDir = filePath.getParent().toString();
+//        String fileNameWithoutExtension = filePath.getFileName().toString().replaceFirst("[.][^.]+$", "");
+//        String outputString = parentDir + File.separator + fileNameWithoutExtension + "_sideview.tif";
+//        Path newOutputFilePath = Paths.get(outputString);
         // the 2 channels
         RandomAccessibleInterval<UnsignedShortType> rai1 = processedChannels.get(0);
         RandomAccessibleInterval<UnsignedShortType> rai2 = processedChannels.get(1);
@@ -188,12 +187,12 @@ public class CreateSideView {
         copyToChannel(rai1,outputImgPlus,0);
         copyToChannel(rai2,outputImgPlus,1);
 
-        // save the new Image to tif file
-        ImgSaver saver = new ImgSaver(context);
-        saver.saveImg(newOutputFilePath.toString(), outputImgPlus);
-        IJ.showStatus("Finish file: "+filePath.getFileName().toString());
-        if (debugMode) IJ.log("Saved side view image: " + newOutputFilePath);
-        return newOutputFilePath;
+//        // save the new Image to tif file
+//        ImgSaver saver = new ImgSaver(context);
+//        saver.saveImg(newOutputFilePath.toString(), outputImgPlus);
+//        IJ.showStatus("Finish file: "+filePath.getFileName().toString());
+//        if (debugMode) IJ.log("Saved side view image: " + newOutputFilePath);
+        return outputImgPlus;
     }
 
     private static ImgPlus<UnsignedShortType>

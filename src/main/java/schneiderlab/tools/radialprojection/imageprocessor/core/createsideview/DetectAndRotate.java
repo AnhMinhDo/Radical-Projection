@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.createsideview;
+package schneiderlab.tools.radialprojection.imageprocessor.core.createsideview;
 
 import ij.ImagePlus;
 import ij.ImageStack;

@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
+package schneiderlab.tools.radialprojection.imageprocessor.core.segmentation;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
