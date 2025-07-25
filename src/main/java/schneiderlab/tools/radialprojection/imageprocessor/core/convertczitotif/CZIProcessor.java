@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.convertczitotif;
+package schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -9,30 +9,28 @@ import ij.plugin.Duplicator;
 import ij.plugin.RGBStackMerge;
 
 import java.io.File;
-
+/*
+converting proprietary CZI format to TIF format
+ */
 public class CZIProcessor {
 
-    public static void processCZItoTIFF(String folderPath,
+    public static void convertingCZItoTIFF(String folderPath,
                                         boolean backgroundSubtraction,
                                         int rolling,
                                         int saturated,
                                         boolean isRotate,
-                                        String rotateDirection,
+                                        RotateDirection rotateDirection,
                                         boolean fixArtifact) {
-        System.out.println("Selected Folder: " + folderPath);
-        System.out.println("Background Subtraction: " + backgroundSubtraction);
 
         if (folderPath == null || folderPath.isEmpty()) {
             System.err.println("Error: Folder path is empty.");
             return;
         }
-
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
             System.err.println("Error: Invalid folder path.");
             return;
         }
-
         File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".czi"));
         if (files == null || files.length == 0) {
             System.err.println("No CZI files found in folder.");
@@ -52,9 +50,8 @@ public class CZIProcessor {
                                          int rolling,
                                          int saturated,
                                          boolean isRotate,
-                                         String rotateDirection,
+                                         RotateDirection rotateDirection,
                                          boolean fixArtifact) {
-        System.out.println("Processing with BGSub: " + file.getName());
         IJ.log("Processing " + file.getName() + " with background subtraction");
 
         ImagePlus imp = new Opener().openImage(file.getAbsolutePath());
@@ -103,7 +100,7 @@ public class CZIProcessor {
             IJ.run(fuchsin, "Subtract Background...", rolling_parameter);
             //rotate the stack
             if(isRotate){
-                String rotateCommand = "Rotate " + rotateDirection;
+                String rotateCommand = "Rotate " + rotateDirection.getLabel();
                 IJ.run(calco, rotateCommand, "");
                 IJ.run(fuchsin, rotateCommand, "");
             }
@@ -127,11 +124,9 @@ public class CZIProcessor {
     private static void executeNoBGSub(File file,
                                        int saturated,
                                        boolean isRotate,
-                                       String rotateDirection,
+                                       RotateDirection rotateDirection,
                                        boolean fixArtifact) {
-        System.out.println("Processing without BGSub: " + file.getName());
         IJ.log("Processing " + file.getName() + " without background subtraction");
-
         ImagePlus imp = new Opener().openImage(file.getAbsolutePath());
         if (imp == null) return;
         // get info meta data
@@ -175,7 +170,7 @@ public class CZIProcessor {
             IJ.run(fuchsin, "Enhance Contrast", saturated_parameter);
             //rotate the stack
             if(isRotate){
-                String rotateCommand = "Rotate " + rotateDirection;
+                String rotateCommand = "Rotate " + rotateDirection.getLabel();
                 IJ.run(calco, rotateCommand, "");
                 IJ.run(fuchsin, rotateCommand, "");
             }
