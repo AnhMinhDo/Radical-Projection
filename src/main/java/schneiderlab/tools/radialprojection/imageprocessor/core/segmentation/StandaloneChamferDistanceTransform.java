@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
+package schneiderlab.tools.radialprojection.imageprocessor.core.segmentation;
 
 import ij.process.ImageProcessor;
 import ij.process.FloatProcessor;
