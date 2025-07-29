@@ -1,5 +1,7 @@
 package schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif;
 
+import javax.swing.*;
+
 public enum RotateDirection {
     DEGREES90_LEFT("90 Degrees Left"),
     DEGREES90_RIGHT("90 Degrees Right");
@@ -19,5 +21,9 @@ public enum RotateDirection {
             if(c.label.equalsIgnoreCase(s)) return c;
         }
         return null; // or throw exception
+    }
+    @Override
+    public String toString(){
+        return label;
     }
 }
