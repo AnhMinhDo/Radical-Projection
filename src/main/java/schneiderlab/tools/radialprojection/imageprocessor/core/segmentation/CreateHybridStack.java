@@ -1,4 +1,4 @@
-package schneiderlab.tools.radicalprojection.imageprocessor.core.segmentation;
+package schneiderlab.tools.radialprojection.imageprocessor.core.segmentation;
 
 import io.scif.services.DatasetIOService;
 import net.imagej.Dataset;
@@ -7,6 +7,7 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -22,49 +23,65 @@ import java.util.ArrayList;
 import static ij.IJ.debugMode;
 
 public class CreateHybridStack {
-    private final Path filePath;
+    private final ImgPlus<UnsignedShortType> imgPlus;
     private int weightLignin;
     private int weightCellulose;
     private final Context context;
     private int windowSize;
     private double sigmaValueForGaussianFilter;
-    private int diameter;
+    private int radius;
+    private RandomAccessibleInterval<FloatType> hybridNonSmoothedStack;
+    private RandomAccessibleInterval<FloatType> hybridSmoothedStack;
+    private int smoothedStackWidth;
+    private int getSmoothedStackHeight;
 
     @Parameter
     private final OpService ops;
 
     public CreateHybridStack(Context context,
-                             Path filePath,
+                             ImgPlus<UnsignedShortType> input,
                              int weight,
                              int windowSize,
                              double sigmaValueForGaussianFilter,
-                             int diameter) {
-        this.filePath = filePath;
+                             int radius) {
+        this.imgPlus = input;
         this.weightCellulose = weight;
         this.weightLignin = 100-weight;
         this.context = context;
         this.ops = context.service(OpService.class);
         this.windowSize = windowSize;
         this.sigmaValueForGaussianFilter = sigmaValueForGaussianFilter;
-        this.diameter= diameter;
+        this.radius= radius;
     }
 
-    public DataDuringSegmentationProcess process() throws IOException {
-        // get the status Service
-        StatusService statusService = context.getService(StatusService.class);
-        //
-        // Get DatasetService and UIService from context
-        DatasetIOService ioService = context.getService(DatasetIOService.class);
-        // load the image
-        Dataset img = ioService.open(filePath.toString());
-        // open file with file path, pre-condition: the input image is 16-bit
-        ImgPlus<?> genericImgPlus = img.getImgPlus();
-        // Verify the type
-        if (!(genericImgPlus.firstElement() instanceof UnsignedShortType)) {
-            throw new IllegalArgumentException("Expected ShortType(16-bit) image");
-        }
+    public RandomAccessibleInterval<FloatType> getHybridNonSmoothedStack() {
+        return hybridNonSmoothedStack;
+    }
 
-        ImgPlus<UnsignedShortType> imgPlus = (ImgPlus<UnsignedShortType>) genericImgPlus;
+    public int getRadius() { return radius; }
+
+    public RandomAccessibleInterval<FloatType> getSmoothedStack() {return hybridSmoothedStack;}
+
+    public int getSmoothedStackWidth() {return smoothedStackWidth;}
+
+    public int getGetSmoothedStackHeight() {return getSmoothedStackHeight;}
+
+    public RandomAccessibleInterval<FloatType> process() throws IOException {
+//        // get the status Service
+//        StatusService statusService = context.getService(StatusService.class);
+//        //
+//        // Get DatasetService and UIService from context
+//        DatasetIOService ioService = context.getService(DatasetIOService.class);
+//        // load the image
+//        Dataset img = ioService.open(filePath.toString());
+//        // open file with file path, pre-condition: the input image is 16-bit
+//        ImgPlus<?> genericImgPlus = img.getImgPlus();
+//        // Verify the type
+//        if (!(genericImgPlus.firstElement() instanceof UnsignedShortType)) {
+//            throw new IllegalArgumentException("Expected ShortType(16-bit) image");
+//        }
+//
+//        ImgPlus<UnsignedShortType> imgPlus = (ImgPlus<UnsignedShortType>) genericImgPlus;
         // check if the image has channels
         int channelDimIdx = imgPlus.dimensionIndex(Axes.CHANNEL);
         boolean hasChannels = (channelDimIdx >= 0);
@@ -106,31 +123,30 @@ public class CreateHybridStack {
         RandomAccessibleInterval<FloatType> lignin = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 1));
         RandomAccessibleInterval<FloatType> hybrid = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 1));
         // Containers for result
-        RandomAccessibleInterval<FloatType> celluloseMultiplied =
-                ops.create().img(cellulose);
-        RandomAccessibleInterval<FloatType> ligninMultiplied =
-                ops.create().img(lignin);
-        RandomAccessibleInterval<FloatType> projectedStack =
-                ops.create().img(lignin);
-        RandomAccessibleInterval<FloatType> smoothedStack =
-                ops.create().img(lignin);
+        RandomAccessibleInterval<FloatType> celluloseMultiplied = ops.create().img(cellulose);
+        RandomAccessibleInterval<FloatType> ligninMultiplied = ops.create().img(lignin);
+        RandomAccessibleInterval<FloatType> projectedStack = ops.create().img(lignin);
+        RandomAccessibleInterval<FloatType> smoothedStack = ops.create().img(lignin);
         // multiply with weight
         ops.math().multiply(celluloseMultiplied, cellulose, weightCelluloseRatioFloatType);
         ops.math().multiply(ligninMultiplied, lignin, weightLigninRatioFloatType);
         ops.math().add(hybrid,celluloseMultiplied,ligninMultiplied);
+        hybridNonSmoothedStack = hybrid;
 //        ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         WindowSlidingProjection.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
 //        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
-
-        ImageJFunctions.show(smoothedStack, "Smoothed Stack");
         // add the data for the process to the data class
-        DataDuringSegmentationProcess ddsp = new DataDuringSegmentationProcess(smoothedStack,
-                (int) width,
-                (int) height,
-                diameter);
-        return ddsp;
+//        DataDuringSegmentationProcess ddsp = new DataDuringSegmentationProcess(smoothedStack,
+//                (int) width,
+//                (int) height,
+//                radius);
+        // assign to instance variable
+        this.smoothedStackWidth = (int) width;
+        this.getSmoothedStackHeight = (int) height;
+        hybridSmoothedStack=smoothedStack;
+        return smoothedStack;
     }
 }
