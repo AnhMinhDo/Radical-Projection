@@ -1,6 +1,4 @@
-package schneiderlab.tools.radialprojection.controllers.uiaction;
-
-import schneiderlab.tools.radialprojection.views.userinterfacecomponents.Radical_Projection_Tool;
+package schneiderlab.tools.radialprojection.controllers.uiaction.czitotif;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
