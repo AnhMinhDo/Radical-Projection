@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.2.0.382" Java: "21.0.7" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.2.0.382" Java: "21.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -6,103 +6,106 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-				name: "tabbedPane2"
+				name: "tabbedPaneMainPane"
 				"tabPlacement": 2
 				"tabLayoutPolicy": 1
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "hidemode 3,align center top"
-					"$columnConstraints": "[41,fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+					"$columnConstraints": "[41,fill][fill][fill][fill][fill][fill][fill][fill][fill]"
 					"$rowConstraints": "[][][][][][][]"
 				} ) {
-					name: "panel3"
+					name: "panelConvertCzi2Tif"
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button5"
+						name: "buttonBrowseConvertCzi2Tif"
 						"text": "Browse"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 1"
 					} )
 					add( new FormComponent( "javax.swing.JTextField" ) {
-						name: "textField1"
+						name: "textFieldConvertCzi2Tif"
 						"text": "file/Path"
+						"editable": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 2 1 10 1"
+						"value": "cell 1 1 8 1"
 					} )
 					add( new FormComponent( "javax.swing.JCheckBox" ) {
-						name: "checkBox3"
+						name: "checkBoxBgSubConvertCzi2Tif"
 						"text": "background subtraction: "
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 2"
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "label9"
+						name: "labelRollingConvertCzi2Tif"
 						"text": "Rolling"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 2 2"
+						"value": "cell 1 2"
 					} )
 					add( new FormComponent( "javax.swing.JSpinner" ) {
-						name: "spinner5"
+						name: "spinnerRollingConvertCzi2Tif"
 						"model": new javax.swing.SpinnerNumberModel {
 							minimum: 1
 							value: 10
 						}
 						"enabled": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 3 2"
+						"value": "cell 2 2"
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "label10"
+						name: "labelEnhanceConstConvertCzi2Tif"
 						"text": "Enhance Constrast: "
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 3"
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "label11"
+						name: "labelSaturateConvertCzi2Tif"
 						"text": "Saturated"
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 1 3"
+					} )
+					add( new FormComponent( "javax.swing.JSpinner" ) {
+						name: "spinnerSaturateConvertCzi2Tif"
+						"model": new javax.swing.SpinnerNumberModel( 35, 0, 100, 1 )
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 2 3"
 					} )
-					add( new FormComponent( "javax.swing.JSpinner" ) {
-						name: "spinner6"
-						"model": new javax.swing.SpinnerNumberModel( 35, 0, 100, 1 )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "labelpercentSignConvertCzi2Tif"
+						"text": "%"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 3 3"
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "label12"
-						"text": "%"
-					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 4 3"
-					} )
 					add( new FormComponent( "javax.swing.JCheckBox" ) {
-						name: "checkBox4"
+						name: "checkBoxRotateConvertCzi2Tif"
 						"text": "Rotate:"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 4"
 					} )
 					add( new FormComponent( "javax.swing.JComboBox" ) {
-						name: "comboBox1"
-						"model": new javax.swing.DefaultComboBoxModel {
-							selectedItem: "90 Degrees Left"
-							addElement( "90 Degrees Left" )
-							addElement( "90 Degrees Right" )
-						}
+						name: "comboBoxRoateDirectionConvertCzi2Tif"
 						"enabled": false
+						auxiliary() {
+							"JavaCodeGenerator.customCreateCode": "new JComboBox<>(RotateDirection.values());"
+						}
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 2 4 2 1"
+						"value": "cell 1 4 2 1"
 					} )
-					add( new FormComponent( "javax.swing.JCheckBox" ) {
-						name: "checkBox5"
-						"text": "Fix LSM880 stripe artifacts"
-						"toolTipText": "corrects for horizontal stripe patterns in case the bi-directional settings of the LSM880 are offset"
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "buttonOkConvertCzi2Tif"
+						"text": "OK"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 5"
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button1"
-						"text": "OK"
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "textFieldStatusConvertCzi2Tif"
+						"editable": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 6 2 1"
+						"value": "cell 0 6"
+					} )
+					add( new FormComponent( "javax.swing.JProgressBar" ) {
+						name: "progressBarConvertCzi2Tif"
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 1 6 3 1"
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "0. CZI to TIFF"
@@ -110,188 +113,45 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "hidemode 3,align center top"
 					"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-					"$rowConstraints": "[][][][][][]"
-				} ) {
-					name: "panel4"
-					add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-						name: "tabbedPane3"
-						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-							"$layoutConstraints": "hidemode 3,align center top"
-							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-							"$rowConstraints": "[][][][][][]"
-						} ) {
-							name: "panel9"
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button2"
-								"text": "ADD"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 0 2 1"
-							} )
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button15"
-								"text": "ADD FOLDER"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 0"
-							} )
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button6"
-								"text": "REMOVE"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 3 0 2 1"
-							} )
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button16"
-								"text": "CLEAR"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 5 0"
-							} )
-							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-								name: "scrollPane1"
-								add( new FormComponent( "javax.swing.JTable" ) {
-									name: "table1"
-									"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
-										add( new java.util.Vector {
-											add( null )
-										} )
-									}, new java.util.Vector {
-										add( "File Paths" )
-									}, new java.util.Vector {
-										add( class java.lang.String )
-									}, new java.util.Vector {
-										add( null )
-									}, new java.util.Vector {
-										add( null )
-									} )
-								} )
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 1 6 1"
-							} )
-						}, new FormLayoutConstraints( null ) {
-							"title": "images list"
-						} )
-						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-							"$layoutConstraints": "hidemode 3,align center top"
-							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-							"$rowConstraints": "[][][][][][][]"
-						} ) {
-							name: "panel10"
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label17"
-								"text": "target_xy pixel size"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 0"
-							} )
-							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner9"
-								"model": new javax.swing.SpinnerNumberModel {
-									minimum: 0
-									value: 200
-								}
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 0"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label18"
-								"text": "nm"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 0"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label19"
-								"text": "target_z pixel size"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 1"
-							} )
-							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner10"
-								"model": new javax.swing.SpinnerNumberModel {
-									minimum: 0
-									value: 200
-								}
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 1"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label20"
-								"text": "nm"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 1"
-							} )
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button7"
-								"text": "PROCESS"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 2"
-							} )
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button23"
-								"text": "Move processed files to next stage"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 2"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label22"
-								"text": "Status:"
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 3"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label14"
-								"text": "Waiting..."
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 3"
-							} )
-						}, new FormLayoutConstraints( null ) {
-							"title": "parameters"
-						} )
-					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 0 12 6"
-					} )
-				}, new FormLayoutConstraints( null ) {
-					"title": "1. Create side-view Projections"
-				} )
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-					"$layoutConstraints": "hidemode 3,align center top"
-					"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
 					"$rowConstraints": "[][][][][][][]"
 				} ) {
-					name: "panel5"
+					name: "panelVesselsSegmentation"
 					add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-						name: "tabbedPane4"
+						name: "tabbedPaneVesselSegmentation"
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 							"$layoutConstraints": "hidemode 3,align center top"
-							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill]"
 							"$rowConstraints": "[][][][][][]"
 						} ) {
-							name: "panel11"
+							name: "panelImageListVesselSegmentation"
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button17"
+								name: "buttonAddFile"
 								"text": "ADD"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 0"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button18"
+								name: "buttonAddFolder"
 								"text": "ADD FOLDER"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 0"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button19"
+								name: "buttonRemove"
 								"text": "REMOVE"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 2 0"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button20"
+								name: "buttonClear"
 								"text": "CLEAR"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 3 0"
 							} )
 							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-								name: "scrollPane4"
+								name: "scrollPaneVesselSegmentation"
 								add( new FormComponent( "javax.swing.JTable" ) {
-									name: "table4"
+									name: "tableAddedFileVesselSegmentation"
 									"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
 										add( new java.util.Vector {
 											add( null )
@@ -313,130 +173,176 @@ new FormModel {
 							"title": "Images List"
 						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-							"$layoutConstraints": "hidemode 3,align center top"
-							"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-							"$rowConstraints": "[][][][][][][][]"
+							"$layoutConstraints": "hidemode 3"
+							"$columnConstraints": "[fill][fill][fill][fill]"
+							"$rowConstraints": "[][][][][][][][][][][][]"
 						} ) {
-							name: "panel12"
+							name: "panelParametersVesselSegmentation"
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label1"
-								"text": "Length of Long-axis Analysis Window (μm)"
+								name: "labelTargetXYPixelSize"
+								"text": "<html>target_xy pixel size(nm)</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 0"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner1"
-								"model": new javax.swing.SpinnerNumberModel {
+								name: "spinnerXYPixelSizeCreateSideView"
+								"model": &SpinnerNumberModel0 new javax.swing.SpinnerNumberModel {
 									minimum: 0
-									value: 1
+									value: 200
 								}
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 0"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label2"
-								"text": "Pre-watershed Smoothing"
+								name: "labelTargetZPixelSize"
+								"text": "<html>target_z pixel size(nm)</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 1"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner2"
-								"model": new javax.swing.SpinnerNumberModel( 2.0, 0.0, 5.0, 0.1 )
+								name: "spinnerZPixelSizeCreateSideView"
+								"model": #SpinnerNumberModel0
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 1"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label3"
-								"text": "slice index for tuning"
+								name: "labelAnalysisWindow"
+								"text": "<html>Analysis Window (μm)</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 2"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner3"
+								name: "spinnerAnalysisWindow"
 								"model": new javax.swing.SpinnerNumberModel {
 									minimum: 0
+									value: 1
 								}
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 2"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label4"
-								"text": "Inner Vessel Diameter [μm]"
+								name: "labelPreWatershedSmoothing"
+								"text": "<html>Pre-watershed <br>Smoothing</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 3"
 							} )
 							add( new FormComponent( "javax.swing.JSpinner" ) {
-								name: "spinner4"
-								"model": new javax.swing.SpinnerNumberModel( 1, 0, 30, 1 )
+								name: "spinnerPreWatershedSmoothing"
+								"model": new javax.swing.SpinnerNumberModel( 2.0, 0.0, 5.0, 0.1 )
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 3"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label5"
-								"text": "Hybrid-weighting of lignin-to-cellulose[%]"
+								name: "labelSliceIndexforTuning"
+								"text": "<html>slice index for tuning</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 4"
 							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label7"
-								"text": "Lignin 100%"
-								"horizontalAlignment": 4
+							add( new FormComponent( "javax.swing.JSpinner" ) {
+								name: "spinnerSliceIndexForTuning"
+								"model": new javax.swing.SpinnerNumberModel {
+									minimum: 0
+								}
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 1 4"
 							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelInnerVesselRadius"
+								"text": "<html>Inner Vessel Radius (μm)</html>"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 5"
+							} )
+							add( new FormComponent( "javax.swing.JSpinner" ) {
+								name: "spinnerInnerVesselRadius"
+								"model": new javax.swing.SpinnerNumberModel( 1, 1, 30, 1 )
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 1 5"
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelHybridWeight"
+								"text": "<html>Hybrid-weighting of <br> lignin-to-cellulose(%)</html>"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 6"
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelLigninHybridWeight"
+								"text": "Lignin 100%"
+								"horizontalAlignment": 4
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 1 6"
+							} )
 							add( new FormComponent( "javax.swing.JSlider" ) {
-								name: "slider1"
+								name: "sliderHybridWeight"
 								"value": 0
 								"paintTicks": true
 								"majorTickSpacing": 25
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 4"
+								"value": "cell 2 6"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label8"
+								name: "labelCelluloseHybridWeight"
 								"text": "Cellulose 0%"
 								"horizontalAlignment": 2
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 3 4"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label6"
-								"text": "Status: "
-								"horizontalAlignment": 4
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 5"
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label13"
-								"text": "Waiting..."
-							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 5 3 1"
+								"value": "cell 3 6"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button22"
-								"text": "Projection and smoothing"
+								name: "buttonCreateSideView"
+								"text": "Create Side View"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 0 6"
+								"value": "cell 0 7"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button4"
+								name: "buttonProjAndSmooth"
+								"text": "<html>Projection and <br> smoothing</html>"
+								"enabled": false
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 1 7"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "buttonSelectCentroid"
 								"text": "Select Centroid"
 								"enabled": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 1 6"
+								"value": "cell 0 8"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button3"
+								name: "buttonWatershed"
 								"text": "Watershed"
 								"enabled": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 2 6"
+								"value": "cell 1 8"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button21"
+								name: "buttonProcessWholeStack"
 								"text": "Process Whole Stack"
+								"enabled": false
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-								"value": "cell 3 6"
+								"value": "cell 0 9"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "buttonMoveToRadialProjection"
+								"text": "Move to next Step"
+								"enabled": false
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 1 9"
+							} )
+							add( new FormComponent( "javax.swing.JSeparator" ) {
+								name: "separator1"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 10 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "textField2StatusVesselSegmentation"
+								"editable": false
+								"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 11 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JProgressBar" ) {
+								name: "progressBarVesselSegmentation"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 2 11 2 1"
 							} )
 						}, new FormLayoutConstraints( null ) {
 							"title": "Parameters"
@@ -445,55 +351,54 @@ new FormModel {
 						"value": "cell 0 0 12 7"
 					} )
 				}, new FormLayoutConstraints( null ) {
-					"title": "2. Initialization of Vessel Extraction"
+					"title": "1. Vessels Segmentation"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "hidemode 3,align center top"
 					"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
 					"$rowConstraints": "[][][][][][][]"
 				} ) {
-					name: "panel6"
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button8"
-						"text": "ADD"
+					name: "panel3RadialProjection"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "labelFileNameRadialProjection"
+						"text": "File name "
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 0"
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button9"
-						"text": "REMOVE"
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "textFieldRadialProjection"
+						"editable": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 2 0"
+						"value": "cell 1 0 5 1"
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button10"
-						"text": "OK"
+						name: "buttonRunRadialProjection"
+						"text": "Radial Projection"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 3 0"
+						"value": "cell 0 1 2 1"
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button14"
-						"text": "Plot 2 radial projection"
+						name: "button2"
+						"text": "Unrolling Vessel"
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 1"
+						"value": "cell 0 2 2 1"
 					} )
-					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-						name: "scrollPane2"
-						add( new FormComponent( "javax.swing.JTable" ) {
-							name: "table2"
-						} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "button5"
+						"text": "Move to Analysis"
+						"enabled": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-						"value": "cell 0 5 4 1"
+						"value": "cell 0 3 2 1"
 					} )
 				}, new FormLayoutConstraints( null ) {
-					"title": "3. Execute vessel segmentation"
+					"title": "2. Radial Projection"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$layoutConstraints": "hidemode 3,align center top"
 					"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
 					"$rowConstraints": "[][][][][][]"
 				} ) {
-					name: "panel7"
+					name: "panel4Analysis"
 					add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 						name: "tabbedPane1"
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
@@ -565,14 +470,14 @@ new FormModel {
 						"value": "cell 0 1"
 					} )
 				}, new FormLayoutConstraints( null ) {
-					"title": "4. Analysis"
+					"title": "3. Analysis"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "Center"
+				"value": "North"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 35 )
-			"size": new java.awt.Dimension( 954, 390 )
+			"size": new java.awt.Dimension( 980, 525 )
 		} )
 	}
 }
