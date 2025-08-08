@@ -14,11 +14,13 @@ import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import org.scijava.Context;
 import schneiderlab.tools.radialprojection.controllers.uiaction.*;
+import schneiderlab.tools.radialprojection.controllers.uiaction.czitotif.BrowseButtonCZIToTif;
+import schneiderlab.tools.radialprojection.controllers.uiaction.mainwindow.AddSavingActionWhenMainWindowClosed;
 import schneiderlab.tools.radialprojection.controllers.workers.*;
 import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.RotateDirection;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.Reconstruction;
-import schneiderlab.tools.radialprojection.models.radialprojection.CziToTifModel;
-import schneiderlab.tools.radialprojection.models.radialprojection.VesselSegmentationModel;
+import schneiderlab.tools.radialprojection.models.czitotifmodel.CziToTifModel;
+import schneiderlab.tools.radialprojection.models.radialprojection.VesselsSegmentationModel;
 import schneiderlab.tools.radialprojection.views.userinterfacecomponents.Radical_Projection_Tool;
 
 import javax.swing.*;
@@ -31,16 +33,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 
 public class MainController {
     private Radical_Projection_Tool mainView;
-    private VesselSegmentationModel mainModel;
     private ArrayList<Path> processedFileInCreateSideView;
     private Context context;
     private ArrayList<Point> coordinates = new ArrayList<>() ;
@@ -62,16 +61,18 @@ public class MainController {
                           Context context) {
         this.mainView = mainView;
         this.context= context;
-        
-        // add Data and EventListener to mainView
+
+        //-----------1.CZI to TIF converting Steps-------------------------------
+        // create an instance of the czi to TIF model
         CziToTifModel cziToTifModel = new CziToTifModel();
+        // get initial values from properties file
+        cziToTifModel.initValues("/properties_files/initValues.properties");
         // Action for Browse button in Converting step
         mainView.getButtonBrowseConvertCzi2Tif().addActionListener(new BrowseButtonCZIToTif(
                 mainView.getTextFieldConvertCzi2Tif(),
                 mainView.getParentFrame()
         ));
-
-        mainView.getTextFieldConvertCzi2Tif().setText(cziToTifModel.getDirPath());
+        // starting dir for text field
         mainView.getTextFieldConvertCzi2Tif().getDocument().addDocumentListener(
                 new DocumentListener() {
                     @Override
@@ -86,18 +87,15 @@ public class MainController {
                     }
                 }
         );
-
         // Action for checkbox background Subtraction in Converting step
-        mainView.getCheckBoxBgSubConvertCzi2Tif().setSelected(cziToTifModel.isBgSub());
-        mainView.getCheckBoxBgSubConvertCzi2Tif().addActionListener(new ActionListener() {
+        mainView.getCheckBoxBgSubConvertCzi2Tif().addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 mainView.getSpinnerRollingConvertCzi2Tif().setEnabled(mainView.getCheckBoxBgSubConvertCzi2Tif().isSelected());
                 cziToTifModel.setIsbgSub(mainView.getCheckBoxBgSubConvertCzi2Tif().isSelected());
             }
         });
-
-        mainView.getSpinnerRollingConvertCzi2Tif().setValue(cziToTifModel.getRollingValue());
+        //add action for the rolling value spinner
         mainView.getSpinnerRollingConvertCzi2Tif().addChangeListener(
                 new ChangeListener() {
                     @Override
@@ -107,8 +105,7 @@ public class MainController {
                     }
                 }
         );
-
-        mainView.getSpinnerSaturateConvertCzi2Tif().setValue(cziToTifModel.getSaturationValue());
+        // add action to the saturate value spinner
         mainView.getSpinnerSaturateConvertCzi2Tif().addChangeListener(
                 new ChangeListener() {
                     @Override
@@ -118,18 +115,16 @@ public class MainController {
                     }
                 }
         );
-
         // Action for checkbox Rotate in Converting step
-        mainView.getCheckBoxRotateConvertCzi2Tif().setSelected(cziToTifModel.isRotate());
-        mainView.getCheckBoxRotateConvertCzi2Tif().addActionListener(new ActionListener() {
+        mainView.getCheckBoxRotateConvertCzi2Tif().addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 mainView.getComboBoxRoateDirectionConvertCzi2Tif()
                         .setEnabled(mainView.getCheckBoxRotateConvertCzi2Tif().isSelected());
                 cziToTifModel.setRotate(mainView.getCheckBoxRotateConvertCzi2Tif().isSelected());
             }
         });
-
+        // Update the model when another item in the combobox is selected
         mainView.getComboBoxRoateDirectionConvertCzi2Tif().addItemListener(
                 new ItemListener() {
                     @Override
@@ -140,38 +135,100 @@ public class MainController {
                     }
                 }
         );
-
+        // add the values from the czitotif model to the view
+        mainView.getTextFieldConvertCzi2Tif().setText(cziToTifModel.getDirPath());// only when the application is started
+        mainView.getCheckBoxBgSubConvertCzi2Tif().setSelected(cziToTifModel.isBgSub());// only when the application is started
+        mainView.getSpinnerRollingConvertCzi2Tif().setValue(cziToTifModel.getRollingValue());// only when the application is started
+        mainView.getSpinnerSaturateConvertCzi2Tif().setValue(cziToTifModel.getSaturationValue());// only when the application is started
+        mainView.getCheckBoxRotateConvertCzi2Tif().setSelected(cziToTifModel.isRotate());// only when the application is started
+        mainView.getComboBoxRoateDirectionConvertCzi2Tif().setSelectedItem(cziToTifModel.getRotateDirection());
         // Action for OK button in Converting step
-        //TODO: Check to validate the data flow of this step
         mainView.getButtonOkConvertCzi2Tif().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.err.println(cziToTifModel.getDirPath() + " "
-                        + cziToTifModel.isBgSub() + " "
-                        + cziToTifModel.getRollingValue() + " "
-                        + cziToTifModel.getSaturationValue() + " "
-                        + cziToTifModel.isRotate() + " "
-                + cziToTifModel.getRotateDirection());
-//                String folderPath = mainView.getTextFieldConvertCzi2Tif().getText();
-//                int rolling = (int) mainView.getSpinnerRollingConvertCzi2Tif().getValue();
-//                int saturated = (int) mainView.getSpinnerSaturateConvertCzi2Tif().getValue();
-//                String rotateDirectionString = (String) mainView.getComboBoxRoateDirectionConvertCzi2Tif()
-//                                                                    .getSelectedItem();
-//                boolean isRotate = mainView.getCheckBoxRotateConvertCzi2Tif().isSelected();
-//                boolean isBackgroundSubtraction = mainView.getCheckBoxBgSubConvertCzi2Tif().isSelected();
-//                Czi2TifWorker czi2TifWorker = new Czi2TifWorker(folderPath,
-//                        isBackgroundSubtraction,
-//                        rolling,
-//                        saturated,
-//                        isRotate,
-//                        RotateDirection.fromLabel(rotateDirectionString));
-//                czi2TifWorker.execute();
+//                System.err.println("dirpath: " + cziToTifModel.getDirPath() + System.lineSeparator()
+//                        + "is background subtraction: " + cziToTifModel.isBgSub() + System.lineSeparator()
+//                        + "rolling value: " + cziToTifModel.getRollingValue() + System.lineSeparator()
+//                        + "saturate value: " +cziToTifModel.getSaturationValue() + System.lineSeparator()
+//                        + "is rotate: " +cziToTifModel.isRotate() + System.lineSeparator()
+//                        + "rotate direction: " +cziToTifModel.getRotateDirection());
+                String folderPath = cziToTifModel.getDirPath();
+                int rolling = (int) cziToTifModel.getRollingValue();
+                int saturated = (int) cziToTifModel.getSaturationValue();
+                RotateDirection rotateDirection = cziToTifModel.getRotateDirection();
+                boolean isRotate = cziToTifModel.isRotate();
+                boolean isBackgroundSubtraction = cziToTifModel.isBgSub();
+                Czi2TifWorker czi2TifWorker = new Czi2TifWorker(folderPath,
+                        isBackgroundSubtraction,
+                        rolling,
+                        saturated,
+                        isRotate,
+                        rotateDirection);
+                czi2TifWorker.execute();
             }
         });
-
-        // initialize the model for the vessel segmentation step
+        //----------- 2.Vessel segmentation -------------------------------
+        // create an instance of the Vessel segmentation model
+        VesselsSegmentationModel vesselsSegmentationModel = new VesselsSegmentationModel();
+        // get initial values from properties file
+        vesselsSegmentationModel.initValues("/properties_files/initValues.properties");
         mainView.getTableAddedFileVesselSegmentation().setModel(new DefaultTableModel(new String[]{"File Path"}, 0));
-
+        // spinner xy pixel size
+        mainView.getSpinnerXYPixelSizeCreateSideView().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int value = (int) mainView.getSpinnerXYPixelSizeCreateSideView().getValue();
+                vesselsSegmentationModel.setXyPixelSize(value);
+            }
+        });
+        // spinner xy pixel size
+        mainView.getSpinnerXYPixelSizeCreateSideView().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int value = (int) mainView.getSpinnerXYPixelSizeCreateSideView().getValue();
+                vesselsSegmentationModel.setXyPixelSize(value);
+            }
+        });
+        // spinner z pixel size
+        mainView.getSpinnerZPixelSizeCreateSideView().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int value = (int) mainView.getSpinnerZPixelSizeCreateSideView().getValue();
+                vesselsSegmentationModel.setzPixelSize(value);
+            }
+        });
+        // spinner analysis window
+        mainView.getSpinnerAnalysisWindow().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int value = (int) mainView.getSpinnerAnalysisWindow().getValue();
+                vesselsSegmentationModel.setAnalysisWindow(value);
+            }
+        });
+        // spinner pre watershed smoothing
+        mainView.getSpinnerPreWatershedSmoothing().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                double value = (double) mainView.getSpinnerPreWatershedSmoothing().getValue();
+                vesselsSegmentationModel.setSmoothingSigma(value);
+            }
+        });
+        // spinner slice index for tuning
+        mainView.getSpinnerSliceIndexForTuning().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int value = (int) mainView.getSpinnerSliceIndexForTuning().getValue();
+                vesselsSegmentationModel.setSliceIndexForTuning(value);
+            }
+        });
+        // spinner vessel radius
+        mainView.getSpinnerInnerVesselRadius().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                double value = (double) mainView.getSpinnerInnerVesselRadius().getValue();
+                vesselsSegmentationModel.setInnerVesselRadius(value);
+            }
+        });
         // Create Side view button
         mainView.getButtonCreateSideView().addActionListener(new ActionListener() {
             @Override
@@ -244,6 +301,7 @@ public class MainController {
                 int currentValue = mainView.getSliderHybridWeight().getValue();
                 mainView.getLabelLigninHybridWeight().setText("Lignin " + (100-currentValue) + "%");
                 mainView.getLabelCelluloseHybridWeight().setText("Cellulose " + currentValue + "%");
+                vesselsSegmentationModel.setCelluloseToLigninRatio(currentValue);
             }
         });
 
@@ -256,7 +314,7 @@ public class MainController {
                         mainView.getSliderHybridWeight().getValue(),
                         (int)mainView.getSpinnerAnalysisWindow().getValue(),
                         (double) mainView.getSpinnerPreWatershedSmoothing().getValue(),
-                        (int) mainView.getSpinnerInnerVesselRadius().getValue(),
+                        (double) mainView.getSpinnerInnerVesselRadius().getValue(),
                         context);
                 pasw.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
@@ -279,7 +337,7 @@ public class MainController {
                 pasw.execute();
             }
         });
-
+        //TODO: seperate the below actionListener to its own class
         // button select Centroid to view the image and let user select centroid
         mainView.getButtonSelectCentroid().addActionListener(new ActionListener() {
             @Override
@@ -334,7 +392,6 @@ public class MainController {
                 });
             }
         });
-
         // button Watershed to segment the image
         mainView.getButtonWatershed().addActionListener(new ActionListener(){
             @Override
@@ -346,7 +403,7 @@ public class MainController {
                         Reconstruction reconstruction = new Reconstruction(hybridStackSmoothed,
                                 hybridStackSmoothedWidth,
                                 hybridStackSmoothedHeight,
-                                (int)mainView.getSpinnerInnerVesselRadius().getValue(),
+                                (double)mainView.getSpinnerInnerVesselRadius().getValue(),
                                 coordinates,
                                 (int)mainView.getSpinnerSliceIndexForTuning().getValue(),
                                 (int)mainView.getSpinnerXYPixelSizeCreateSideView().getValue());
@@ -372,7 +429,6 @@ public class MainController {
                 segmentationWorker.execute();
             }
         });
-
         // button processing wholeStack
         mainView.getButtonProcessWholeStack().addActionListener(new ActionListener() {
             @Override
@@ -383,7 +439,7 @@ public class MainController {
                         hybridStackSmoothed,
                         hybridStackSmoothedWidth,
                         hybridStackSmoothedHeight,
-                        (int)mainView.getSpinnerInnerVesselRadius().getValue(),
+                        (double)mainView.getSpinnerInnerVesselRadius().getValue(),
                         coordinatesBatch,
                         (int)mainView.getSpinnerSliceIndexForTuning().getValue(),
                         (int)mainView.getSpinnerXYPixelSizeCreateSideView().getValue()
@@ -421,6 +477,15 @@ public class MainController {
                 mainView.getTableAddedFileVesselSegmentation(),
                 mainView.getTextFieldRadialProjection()));
 
+        // add the values from the czitotif model to the view
+        mainView.getSpinnerXYPixelSizeCreateSideView().setValue(vesselsSegmentationModel.getXyPixelSize());
+        mainView.getSpinnerZPixelSizeCreateSideView().setValue(vesselsSegmentationModel.getzPixelSize());
+        mainView.getSpinnerAnalysisWindow().setValue(vesselsSegmentationModel.getAnalysisWindow());
+        mainView.getSpinnerPreWatershedSmoothing().setValue(vesselsSegmentationModel.getSmoothingSigma());
+        mainView.getSpinnerSliceIndexForTuning().setValue(vesselsSegmentationModel.getSliceIndexForTuning());
+        mainView.getSpinnerInnerVesselRadius().setValue(vesselsSegmentationModel.getInnerVesselRadius());
+        mainView.getSliderHybridWeight().setValue(vesselsSegmentationModel.getCelluloseToLigninRatio());
+        //---------- - 2.Radial Projection -------------------------------
         // perform Radial Projection
         mainView.getButtonRunRadialProjection().addActionListener(new ActionListener() {
             @Override
@@ -457,7 +522,11 @@ public class MainController {
                 polarProjection.execute();
             }
         });
-
+        //--------------MAIN WINDOW-----------------------------------------
+        // TODO:Save all the parameters of current session to imagej/Fiji Prefs
+        mainView.getParentFrame().addWindowListener(
+                new AddSavingActionWhenMainWindowClosed(cziToTifModel,
+                                                        vesselsSegmentationModel));
     }
 
 
