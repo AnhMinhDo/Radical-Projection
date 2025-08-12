@@ -5,8 +5,32 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 public class WindowSlidingProjection {
-    public static void averageProjection(
+
+    private int currentSliceProcess;
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+    public int getCurrentSlice() {
+        return this.currentSliceProcess;
+    }
+
+    public void setNewCurrentSlice(int newCurrentSlice) {
+        int previousSlice = this.currentSliceProcess;
+        this.currentSliceProcess = newCurrentSlice;
+        this.pcs.firePropertyChange("currentSlice", previousSlice, currentSliceProcess);
+    }
+
+
+    public void averageProjection(
             RandomAccessibleInterval<FloatType> input,
             RandomAccessibleInterval<FloatType> output,
             int windowSize,
@@ -15,6 +39,7 @@ public class WindowSlidingProjection {
             int height){
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         for (long z = 0; z < depth; z++) {
+            setNewCurrentSlice((int)z); // this is for updating the ProgressBar
             // Determine the slice window (handle boundaries)
             long startSlice = Math.max(0, z - windowSize / 2);
             long endSlice = Math.min(depth - 1, z + windowSize / 2);
