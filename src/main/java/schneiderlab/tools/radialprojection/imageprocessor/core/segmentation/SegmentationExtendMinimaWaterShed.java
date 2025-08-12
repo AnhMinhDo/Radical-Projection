@@ -22,7 +22,7 @@ public class SegmentationExtendMinimaWaterShed {
     private int width;
     private int height;
     private Point pointForBackground;
-    private int radius;
+    private float radius;
     private int pixelScaleInNanometer;
     private ImagePlus inputSliceImagePlus;
 
@@ -30,13 +30,13 @@ public class SegmentationExtendMinimaWaterShed {
                                               RandomAccessibleInterval<FloatType> inputSlice,
                                               int width,
                                               int height,
-                                              int radius,
+                                              double radius,
                                               int pixelScaleInNanometer) {
         this.inputSlice = inputSlice;
         this.clickCoordinate = clickCoordinate;
         this.width = width;
         this.height = height;
-        this.radius = radius;
+        this.radius = (float) radius;
         this.pointForBackground = new Point((int) width - 1, (int) height - 1);
         this.pixelScaleInNanometer = pixelScaleInNanometer;
     }
@@ -67,7 +67,7 @@ public class SegmentationExtendMinimaWaterShed {
         float[] markerDistanceTransformedFloatArray = (float[]) markerDistanceTransformed.getPixels();
         float[] grownRegionProcessorFloatArray = (float[]) grownRegionProcessor.getPixels();
         for (int p = 0; p < grownRegionProcessorFloatArray.length; p++) {
-            grownRegionProcessorFloatArray[p] = (markerDistanceTransformedFloatArray[p]*pixelScaleInNanometer*0.001 <= radius*1f) ? 255 : 0; // Multiply by 0,001 to convert from nm to µm,any point outside the range is marked as 0
+            grownRegionProcessorFloatArray[p] = (markerDistanceTransformedFloatArray[p]*pixelScaleInNanometer*0.001 <= radius) ? 255 : 0; // Multiply by 0,001 to convert from nm to µm,any point outside the range is marked as 0
         }
         // write the growRegion to imageplus
         ImagePlus growRegion = new ImagePlus("grown Region", grownRegionProcessor);
