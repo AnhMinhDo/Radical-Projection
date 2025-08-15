@@ -11,17 +11,17 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class PolarProjection {
-    private ImagePlus hybridStack;
-    private ImageStack hybridStackImageStack;
-    private ImagePlus binaryMaskEdge;
-    private ImageStack binaryMaskEdgeImageStack;
-    private ArrayList<Point> centroidList;
-    private int angleStep;
-    private int angleCount;
-    private int maxRadius;
-    private int outputHeight;
-    private int outputWidth;
-    private ShortProcessor hybridWallProcessor;
+    private final ImagePlus hybridStack;
+    private final ImageStack hybridStackImageStack;
+    private final ImagePlus binaryMaskEdge;
+    private final ImageStack binaryMaskEdgeImageStack;
+    private final ArrayList<Point> centroidList;
+    private final int angleStep;
+    private final int angleCount;
+    private final int maxRadius;
+    private final int outputHeight;
+    private final int outputWidth;
+    private final ShortProcessor hybridWallProcessor;
 
     public PolarProjection(ImagePlus hybridStack,
                            ImagePlus binaryMaskEdge,
@@ -93,21 +93,26 @@ public class PolarProjection {
             double[] values = profile.getProfile();
             for (int j = 0; j < values.length; j++) { // traverse each of the pixel on the line
                 if(values[j] > 0){ // find the signal of the mask
-                    //point at interception
-                    int px = (int)(cx + (j+1) * Math.cos(rad));
-                    int py = (int)(cy - (j+1) * Math.sin(rad));
-                    //point before interception
-                    int px_b = (int)(cx + (j) * Math.cos(rad));
-                    int py_b = (int)(cy - (j) * Math.sin(rad));
-                    //point after interception
-                    int px_a = (int)(cx + (j+2) * Math.cos(rad));
-                    int py_a = (int)(cy - (j+2) * Math.sin(rad));
-                    output2DArray[i][currentSliceIdx] = (short)Math.max(originalProcessor.getf(px,py),
-                            Math.max(originalProcessor.getf(px_b,py_b),originalProcessor.getf(px_a,py_a))); // select the highest signal out of the 3 points
+                    output2DArray[i][currentSliceIdx] = selectBestSignal(cx,cy,rad,j,originalProcessor);
                     break;
                 }
             }
         }
+    }
+
+    private static short selectBestSignal (int cx, int cy, double rad, int currentIndex, ImageProcessor imageProcessor){
+        //point at interception
+        int px = (int)(cx + (currentIndex+1) * Math.cos(rad));
+        int py = (int)(cy - (currentIndex+1) * Math.sin(rad));
+        //point before interception
+        int px_b = (int)(cx + (currentIndex) * Math.cos(rad));
+        int py_b = (int)(cy - (currentIndex) * Math.sin(rad));
+        //point after interception
+        int px_a = (int)(cx + (currentIndex+2) * Math.cos(rad));
+        int py_a = (int)(cy - (currentIndex+2) * Math.sin(rad));
+        return (short)Math.max(imageProcessor.getf(px,py),
+                Math.max(imageProcessor.getf(px_b,py_b),imageProcessor.getf(px_a,py_a))); // select the highest signal out of the 3 points to ensure the best projection quality
+
     }
 
 }
