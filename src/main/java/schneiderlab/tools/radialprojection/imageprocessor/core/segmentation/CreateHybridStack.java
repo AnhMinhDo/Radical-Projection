@@ -16,6 +16,9 @@ import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,11 +32,12 @@ public class CreateHybridStack {
     private final Context context;
     private int windowSize;
     private double sigmaValueForGaussianFilter;
-    private int radius;
+    private double radius;
     private RandomAccessibleInterval<FloatType> hybridNonSmoothedStack;
     private RandomAccessibleInterval<FloatType> hybridSmoothedStack;
     private int smoothedStackWidth;
     private int getSmoothedStackHeight;
+    private int currentProgress;
 
     @Parameter
     private final OpService ops;
@@ -43,7 +47,7 @@ public class CreateHybridStack {
                              int weight,
                              int windowSize,
                              double sigmaValueForGaussianFilter,
-                             int radius) {
+                             double radius) {
         this.imgPlus = input;
         this.weightCellulose = weight;
         this.weightLignin = 100-weight;
@@ -54,11 +58,29 @@ public class CreateHybridStack {
         this.radius= radius;
     }
 
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+    public int getCurrentProgress() {
+        return this.currentProgress;
+    }
+
+    public void setNewCurrentProgress(int newCurrentProgress) {
+        int previousProgress = this.currentProgress;
+        this.currentProgress = newCurrentProgress;
+        this.pcs.firePropertyChange("progress", previousProgress, currentProgress);
+    }
+
     public RandomAccessibleInterval<FloatType> getHybridNonSmoothedStack() {
         return hybridNonSmoothedStack;
     }
 
-    public int getRadius() { return radius; }
+    public double getRadius() { return radius; }
 
     public RandomAccessibleInterval<FloatType> getSmoothedStack() {return hybridSmoothedStack;}
 
@@ -134,7 +156,18 @@ public class CreateHybridStack {
         hybridNonSmoothedStack = hybrid;
 //        ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
-        WindowSlidingProjection.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
+        WindowSlidingProjection wsp = new WindowSlidingProjection();
+        wsp.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if("currentSlice".equals(evt.getPropertyName())){
+                    int currentSliceProcess = (int)evt.getNewValue();
+                    int progressValue = (int) Math.ceil((100.0/depth)*currentSliceProcess);
+                    setNewCurrentProgress(progressValue);
+                }
+            }
+        });
+        wsp.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
 //        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
