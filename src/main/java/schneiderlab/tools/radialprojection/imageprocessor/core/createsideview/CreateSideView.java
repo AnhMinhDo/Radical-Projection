@@ -235,7 +235,6 @@ public class CreateSideView {
     }
 
 
-
     // Helper method to get min/max values
     private static double[] getMinMax(RandomAccessibleInterval<UnsignedShortType> image) {
         double min = Double.POSITIVE_INFINITY;
