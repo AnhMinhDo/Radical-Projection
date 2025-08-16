@@ -1,38 +1,32 @@
 package schneiderlab.tools.radialprojection.imageprocessor.core.segmentation;
 
-import io.scif.services.DatasetIOService;
-import net.imagej.Dataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.scijava.Context;
-import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 import static ij.IJ.debugMode;
 
 public class CreateHybridStack {
     private final ImgPlus<UnsignedShortType> imgPlus;
-    private int weightLignin;
-    private int weightCellulose;
+    private final int weightLignin;
+    private final int weightCellulose;
     private final Context context;
-    private int windowSize;
-    private double sigmaValueForGaussianFilter;
-    private double radius;
+    private final int windowSize;
+    private final double sigmaValueForGaussianFilter;
+    private final double radius;
     private RandomAccessibleInterval<FloatType> hybridNonSmoothedStack;
     private RandomAccessibleInterval<FloatType> hybridSmoothedStack;
     private int smoothedStackWidth;
@@ -171,11 +165,6 @@ public class CreateHybridStack {
 //        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
-        // add the data for the process to the data class
-//        DataDuringSegmentationProcess ddsp = new DataDuringSegmentationProcess(smoothedStack,
-//                (int) width,
-//                (int) height,
-//                radius);
         // assign to instance variable
         this.smoothedStackWidth = (int) width;
         this.getSmoothedStackHeight = (int) height;
