@@ -3,6 +3,7 @@ package schneiderlab.tools.radialprojection.controllers.controllers;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
+import io.reactivex.Single;
 import net.imagej.ImgPlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -42,20 +43,8 @@ public class MainController {
     private Radical_Projection_Tool mainView;
     private ArrayList<Path> processedFileInCreateSideView;
     private Context context;
-    private ArrayList<Point> coordinates = new ArrayList<>() ;
-    private ArrayList<Point> coordinatesBatch = new ArrayList<>() ;
-    private Overlay overlaySegmentation;
-    private ImagePlus impInByte;
     private Path currentFilePath;
-    private ImgPlus<UnsignedShortType> sideView;
-    private RandomAccessibleInterval<FloatType> hybridStackNonSmoothed;
-    private RandomAccessibleInterval<FloatType> hybridStackSmoothed;
-    private int hybridStackSmoothedWidth;
-    private int hybridStackSmoothedHeight;
-    private ImagePlus edgeBinaryMaskImagePlus;
     private ImagePlus finalSegmentation;
-    private HashMap<Integer, ArrayList<Point>> centroidHashMap;
-
 
     public MainController(Radical_Projection_Tool mainView,
                           Context context) {
@@ -146,12 +135,6 @@ public class MainController {
         mainView.getButtonOkConvertCzi2Tif().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                System.err.println("dirpath: " + cziToTifModel.getDirPath() + System.lineSeparator()
-//                        + "is background subtraction: " + cziToTifModel.isBgSub() + System.lineSeparator()
-//                        + "rolling value: " + cziToTifModel.getRollingValue() + System.lineSeparator()
-//                        + "saturate value: " +cziToTifModel.getSaturationValue() + System.lineSeparator()
-//                        + "is rotate: " +cziToTifModel.isRotate() + System.lineSeparator()
-//                        + "rotate direction: " +cziToTifModel.getRotateDirection());
                 String folderPath = cziToTifModel.getDirPath();
                 int rolling = (int) cziToTifModel.getRollingValue();
                 int saturated = (int) cziToTifModel.getSaturationValue();
@@ -250,8 +233,8 @@ public class MainController {
                             try {
                                 mainView.getTextField2StatusVesselSegmentation().setText("Side View Created");
                                 mainView.getButtonProjAndSmooth().setEnabled(true);
-                                sideView = createSideViewWorker.get();
-                                ImageJFunctions.show(sideView);
+                                vesselsSegmentationModel.setSideView(createSideViewWorker.get());
+                                ImageJFunctions.show(vesselsSegmentationModel.getSideView());
                                 // use result here
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -310,7 +293,7 @@ public class MainController {
             @Override
             public void actionPerformed(ActionEvent e) {
                     mainView.getTextField2StatusVesselSegmentation().setText("Creating hybrid stack and smoothing...");
-                ProjectionAndSmoothingWorker pasw = new ProjectionAndSmoothingWorker(sideView,
+                ProjectionAndSmoothingWorker pasw = new ProjectionAndSmoothingWorker(vesselsSegmentationModel.getSideView(),
                         mainView.getSliderHybridWeight().getValue(),
                         (int)mainView.getSpinnerAnalysisWindow().getValue(),
                         (double) mainView.getSpinnerPreWatershedSmoothing().getValue(),
@@ -319,15 +302,20 @@ public class MainController {
                 pasw.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
+                        if("progress".equals(evt.getPropertyName())){
+                            int currentProgress = (int)evt.getNewValue();
+                            mainView.getProgressBarVesselSegmentation().setValue(currentProgress);
+                            mainView.getProgressBarVesselSegmentation().setToolTipText(String.valueOf(currentProgress));
+                        }
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
                                 //TODO: get the result
-                                hybridStackNonSmoothed = pasw.getHybridStackNonSmoothed();
-                                hybridStackSmoothed = pasw.getHybridStackSmoothed();
-                                hybridStackSmoothedWidth = pasw.getWidth();
-                                hybridStackSmoothedHeight = pasw.getHeight();
-                                ImageJFunctions.show(hybridStackNonSmoothed);
-                                ImageJFunctions.show(hybridStackSmoothed);
+                                vesselsSegmentationModel.setHybridStackNonSmoothed(pasw.getHybridStackNonSmoothed());
+                                vesselsSegmentationModel.setHybridStackSmoothed(pasw.getHybridStackSmoothed());
+                                vesselsSegmentationModel.setHybridStackSmoothedWidth(pasw.getWidth());
+                                vesselsSegmentationModel.setHybridStackSmoothedHeight(pasw.getHeight());
+                                ImageJFunctions.show(vesselsSegmentationModel.getHybridStackNonSmoothed());
+                                ImageJFunctions.show(vesselsSegmentationModel.getHybridStackSmoothed());
                                 // update UI
                                 mainView.getTextField2StatusVesselSegmentation().setText("Complete Projection and Smoothing");
                                 mainView.getButtonSelectCentroid().setEnabled(true);
@@ -342,7 +330,7 @@ public class MainController {
         mainView.getButtonSelectCentroid().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RandomAccessibleInterval<FloatType>	smoothedStack = hybridStackSmoothed;
+                RandomAccessibleInterval<FloatType>	smoothedStack = vesselsSegmentationModel.getHybridStackSmoothed();
                 int slideForTuning = (int)mainView.getSpinnerSliceIndexForTuning().getValue();
                 RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,slideForTuning);
                 // Copy the view to a new Img<FloatType>
@@ -356,13 +344,13 @@ public class MainController {
                 // Convert to ImagePlus
                 ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
                 impFloat.resetDisplayRange();
-                impInByte = new ImagePlus("impInByte", impFloat.getProcessor().convertToByte(true));
+                vesselsSegmentationModel.setImpInByte(new ImagePlus("impInByte", impFloat.getProcessor().convertToByte(true)));
                 impFloat.resetDisplayRange();
-                impInByte.show();
+                vesselsSegmentationModel.getImpInByte().show();
                 // Create a new PointRoi to collect points
                 PointRoi pointRoi = new PointRoi();
-                impInByte.setRoi(pointRoi);
-                ImageCanvas canvas = impInByte.getCanvas();
+                vesselsSegmentationModel.getImpInByte().setRoi(pointRoi);
+                ImageCanvas canvas = vesselsSegmentationModel.getImpInByte().getCanvas();
                 double magnificationLevel = 4.0;
                 canvas.setMagnification(magnificationLevel);
                 // Get screen dimensions
@@ -370,12 +358,12 @@ public class MainController {
                 int screenWidth = screenSize.width;
                 int screenHeight = screenSize.height;
                 // Calculate window size for zoom
-                int imgWidth = impInByte.getWidth() * (int) magnificationLevel;
-                int imgHeight = impInByte.getHeight() * (int) magnificationLevel;
+                int imgWidth = vesselsSegmentationModel.getImpInByte().getWidth() * (int) magnificationLevel;
+                int imgHeight = vesselsSegmentationModel.getImpInByte().getHeight() * (int) magnificationLevel;
                 // position the window at  bottom left
                 int xlocation = 10;
                 int ylocation = screenHeight-imgHeight-((int)screenHeight*4/100); // screenHeight*4/100 to create a little bit space
-                ImageWindow window = impInByte.getWindow();
+                ImageWindow window = vesselsSegmentationModel.getImpInByte().getWindow();
                 window.setLocationAndSize( xlocation,ylocation ,imgWidth,imgHeight);
                 // add eventListener to canvas
                 canvas.addMouseListener(new MouseAdapter() {
@@ -385,8 +373,8 @@ public class MainController {
                         int x = canvas.offScreenX(e.getX());
                         int y = canvas.offScreenY(e.getY());
                         Point pointLatest = new Point(x,y);
-                        coordinates.add(pointLatest);
-                        IJ.log(coordinates.toString());
+                        vesselsSegmentationModel.getCoordinates().add(pointLatest);
+                        IJ.log(vesselsSegmentationModel.getCoordinates().toString());
                         mainView.getButtonWatershed().setEnabled(true);
                     }
                 });
@@ -400,14 +388,15 @@ public class MainController {
                     @Override
                     protected Void doInBackground() throws Exception {
                         int slideForTuning = (int)mainView.getSpinnerSliceIndexForTuning().getValue();
-                        Reconstruction reconstruction = new Reconstruction(hybridStackSmoothed,
-                                hybridStackSmoothedWidth,
-                                hybridStackSmoothedHeight,
+                        Reconstruction reconstruction = new Reconstruction(
+                                vesselsSegmentationModel.getHybridStackSmoothed(),
+                                vesselsSegmentationModel.getHybridStackSmoothedWidth(),
+                                vesselsSegmentationModel.getHybridStackSmoothedHeight(),
                                 (double)mainView.getSpinnerInnerVesselRadius().getValue(),
-                                coordinates,
+                                vesselsSegmentationModel.getCoordinates(),
                                 (int)mainView.getSpinnerSliceIndexForTuning().getValue(),
                                 (int)mainView.getSpinnerXYPixelSizeCreateSideView().getValue());
-                        overlaySegmentation = reconstruction.process1Slide();
+                        vesselsSegmentationModel.setOverlaySegmentation(reconstruction.process1Slide());
                         return null;
                     }
                 };
@@ -416,13 +405,13 @@ public class MainController {
                     public void propertyChange(PropertyChangeEvent evt) {
                         if("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
-                            coordinatesBatch.clear();
-                            coordinatesBatch.addAll(coordinates);
-                            coordinates.clear();
+                            vesselsSegmentationModel.getCoordinatesBatch().clear();
+                            vesselsSegmentationModel.getCoordinatesBatch().addAll(vesselsSegmentationModel.getCoordinates());
+                            vesselsSegmentationModel.getCoordinates().clear();
                             mainView.getButtonProcessWholeStack().setEnabled(true);
                             mainView.getButtonWatershed().setEnabled(false);
-                            impInByte.setOverlay(overlaySegmentation);
-                            impInByte.updateAndDraw();
+                            vesselsSegmentationModel.getImpInByte().setOverlay(vesselsSegmentationModel.getOverlaySegmentation());
+                            vesselsSegmentationModel.getImpInByte().updateAndDraw();
                         }
                     }
                 });
@@ -436,11 +425,11 @@ public class MainController {
                 mainView.getTextField2StatusVesselSegmentation().setText("Processing whole stack...");
                 mainView.getProgressBarVesselSegmentation().setValue(0);
                 SegmentWholeStackWorker batchSegmentationWorker = new SegmentWholeStackWorker(
-                        hybridStackSmoothed,
-                        hybridStackSmoothedWidth,
-                        hybridStackSmoothedHeight,
+                        vesselsSegmentationModel.getHybridStackSmoothed(),
+                        vesselsSegmentationModel.getHybridStackSmoothedWidth(),
+                        vesselsSegmentationModel.getHybridStackSmoothedHeight(),
                         (double)mainView.getSpinnerInnerVesselRadius().getValue(),
-                        coordinatesBatch,
+                        vesselsSegmentationModel.getCoordinatesBatch(),
                         (int)mainView.getSpinnerSliceIndexForTuning().getValue(),
                         (int)mainView.getSpinnerXYPixelSizeCreateSideView().getValue()
                 );
@@ -455,9 +444,9 @@ public class MainController {
                         if ("state".equals(propertyChangeEvent.getPropertyName()) &&
                                 propertyChangeEvent.getNewValue() == SwingWorker.StateValue.DONE){
                             finalSegmentation=batchSegmentationWorker.getFinalSegmentation();
-                            edgeBinaryMaskImagePlus=batchSegmentationWorker.getEdgeBinaryMaskImagePlus();
-                            centroidHashMap=batchSegmentationWorker.getCentroidHashMap();
-                            ImagePlus hybridStackWithEdgeCentroidOverlay = batchSegmentationWorker.getStackWithVesselEdgeCentroidOverlay();
+                            vesselsSegmentationModel.setEdgeBinaryMaskImagePlus(batchSegmentationWorker.getEdgeBinaryMaskImagePlus());
+                            vesselsSegmentationModel.setCentroidHashMap(batchSegmentationWorker.getCentroidHashMap());
+//                            ImagePlus hybridStackWithEdgeCentroidOverlay = batchSegmentationWorker.getStackWithVesselEdgeCentroidOverlay();
                             mainView.getTextField2StatusVesselSegmentation().setText("Complete processing whole stack ");
                             mainView.getButtonMoveToRadialProjection().setEnabled(true);
                             mainView.getProgressBarVesselSegmentation().setValue(100);
@@ -475,7 +464,9 @@ public class MainController {
         // button move to radial projection step
         mainView.getButtonMoveToRadialProjection().addActionListener(new MoveCurrentFileToRadialProjectionStep(
                 mainView.getTableAddedFileVesselSegmentation(),
-                mainView.getTextFieldRadialProjection()));
+                mainView.getTextFieldRadialProjection(),
+                mainView.getTabbedPaneMainPane(),
+                mainView.getPanel3RadialProjection()));
 
         // add the values from the czitotif model to the view
         mainView.getSpinnerXYPixelSizeCreateSideView().setValue(vesselsSegmentationModel.getXyPixelSize());
@@ -491,8 +482,8 @@ public class MainController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Create copy using cursors
-                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(hybridStackNonSmoothed));
-                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(hybridStackNonSmoothed).cursor();
+                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
+                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
                 net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
                 while (srcCursor.hasNext()) {
                     dstCursor.next().set(srcCursor.next());
@@ -502,8 +493,8 @@ public class MainController {
                 impFloat.resetDisplayRange();
                 PolarProjectionWorker polarProjection = new PolarProjectionWorker(
                         impFloat,
-                        edgeBinaryMaskImagePlus,
-                        centroidHashMap
+                        vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
+                        vesselsSegmentationModel.getCentroidHashMap()
                 );
                 polarProjection.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
