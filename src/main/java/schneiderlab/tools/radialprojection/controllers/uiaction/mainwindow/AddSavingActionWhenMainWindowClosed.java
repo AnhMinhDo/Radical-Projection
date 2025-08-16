@@ -1,7 +1,7 @@
 package schneiderlab.tools.radialprojection.controllers.uiaction.mainwindow;
 
 import schneiderlab.tools.radialprojection.models.czitotifmodel.CziToTifModel;
-import schneiderlab.tools.radialprojection.models.radialprojection.VesselSegmentationModel;
+import schneiderlab.tools.radialprojection.models.radialprojection.VesselsSegmentationModel;
 import schneiderlab.tools.radialprojection.views.userinterfacecomponents.Radical_Projection_Tool;
 import ij.Prefs;
 import java.awt.event.WindowEvent;
@@ -9,12 +9,12 @@ import java.awt.event.WindowListener;
 
 public class AddSavingActionWhenMainWindowClosed implements WindowListener {
     private final CziToTifModel cziToTifModel;
-    private final VesselSegmentationModel vesselSegmentationModel;
+    private final VesselsSegmentationModel vesselsSegmentationModel;
 
     public AddSavingActionWhenMainWindowClosed(CziToTifModel cziToTifModel,
-                                               VesselSegmentationModel vesselSegmentationModel) {
+                                               VesselsSegmentationModel vesselsSegmentationModel) {
         this.cziToTifModel=cziToTifModel;
-        this.vesselSegmentationModel=vesselSegmentationModel;
+        this.vesselsSegmentationModel=vesselsSegmentationModel;
     }
 
     @Override
@@ -31,6 +31,13 @@ public class AddSavingActionWhenMainWindowClosed implements WindowListener {
         Prefs.set("RadialProjection.CziToTifModel.saturationValue",cziToTifModel.getSaturationValue());
         Prefs.set("RadialProjection.CziToTifModel.isRotate",cziToTifModel.isRotate());
         Prefs.set("RadialProjection.CziToTifModel.rotateDirection",cziToTifModel.getRotateDirection().toString());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.xyPixelSize", vesselsSegmentationModel.getXyPixelSize());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.zPixelSize", vesselsSegmentationModel.getzPixelSize());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.analysisWindow", vesselsSegmentationModel.getAnalysisWindow());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.smoothingSigma", vesselsSegmentationModel.getSmoothingSigma());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.sliceIndexForTuning", vesselsSegmentationModel.getSliceIndexForTuning());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.innerVesselRadius", vesselsSegmentationModel.getInnerVesselRadius());
+        Prefs.set("RadialProjection.VesselsSegmentationModel.celluloseToLigninRatio", vesselsSegmentationModel.getCelluloseToLigninRatio());
     }
 
     @Override
