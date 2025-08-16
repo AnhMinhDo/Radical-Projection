@@ -11,13 +11,13 @@ public class CreateMask {
     private final ArrayList<Point> coordinates;
     private final int width;
     private final int height;
-    private final int diameter;
-    private final int radius;
+    private final double diameter;
+    private final double radius;
 
     public CreateMask(ArrayList<Point> coordinates,
                       int width,
                       int height,
-                      int radius){
+                      double radius){
         this.coordinates = coordinates;
         this.width = width;
         this.height = height;
