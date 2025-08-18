@@ -111,8 +111,14 @@ public class Reconstruction {
         ImagePlus segmentedImage = semws.performSegmentation();
         // Overlay the segmentation on to the original image
         ImageProcessor segmentedImageProcessor = segmentedImage.getProcessor();
-        //TODO: fix the line below, replace the 2.0F and 4.0F with a general approach that capture all the return label
-        segmentedImageProcessor.setThreshold((double) 2.0F, (double) 4.0F, ImageProcessor.NO_LUT_UPDATE);
+        // get the selected label
+        int[] desiredLabel =process1SliceDesiredLabel(segmentedImageProcessor,coordinatesOutside);
+        // sort array
+        Arrays.sort(desiredLabel);
+        // the first value is min threshold and the last value is max threshold
+        double min = desiredLabel[0];
+        double max = desiredLabel[desiredLabel.length-1];
+        segmentedImageProcessor.setThreshold((double) min, (double) max, ImageProcessor.NO_LUT_UPDATE);
         ThresholdToSelection ts = new ThresholdToSelection();
         Roi maskRoi = ts.convert(segmentedImage.getProcessor());
 //        segmentedImage.setOverlay(new Overlay(maskRoi));
@@ -586,6 +592,19 @@ public class Reconstruction {
             wholeStackClickMap.get(key).add(thisSliceCentroidMap.get(key));
         }
     }
+
+    // function given the labeled image and the initial click, return the desired label
+    private static int[] process1SliceDesiredLabel (ImageProcessor labeledImageProcessor, ArrayList<Point> initialClicks){
+        int[] result = new int[initialClicks.size()];
+        for (int i = 0; i < initialClicks.size(); i++) {
+            Point point = initialClicks.get(i);
+            int label = (int)labeledImageProcessor.getf(point.x,point.y);
+            result[i] = label;
+        }
+        return result;
+    }
+
+
 
 
 
