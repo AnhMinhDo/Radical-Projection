@@ -13,10 +13,10 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 public class CreateSideViewWorker extends SwingWorker<ImgPlus<UnsignedShortType>, Void> {
-    private int targetXYpixelSize;
-    private int targetZpixelSize;
-    private Path filePath;
-    private Context context;
+    private final int targetXYpixelSize;
+    private final int targetZpixelSize;
+    private final Path filePath;
+    private final Context context;
     private Img<UnsignedShortType> sideViewImg;
 
     public CreateSideViewWorker(int targetXYpixelSize, int targetZpixelSize, Path filePath, Context context) {
