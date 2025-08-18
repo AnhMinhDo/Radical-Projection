@@ -42,7 +42,7 @@ import java.util.HashMap;
 public class MainController {
     private Radical_Projection_Tool mainView;
     private ArrayList<Path> processedFileInCreateSideView;
-    private Context context;
+    private final Context context;
     private Path currentFilePath;
     private ImagePlus finalSegmentation;
 
@@ -476,7 +476,7 @@ public class MainController {
         mainView.getSpinnerSliceIndexForTuning().setValue(vesselsSegmentationModel.getSliceIndexForTuning());
         mainView.getSpinnerInnerVesselRadius().setValue(vesselsSegmentationModel.getInnerVesselRadius());
         mainView.getSliderHybridWeight().setValue(vesselsSegmentationModel.getCelluloseToLigninRatio());
-        //---------- - 2.Radial Projection -------------------------------
+        //---------- - 2.Radial Projection and Unrolling -------------------------------
         // perform Radial Projection
         mainView.getButtonRunRadialProjection().addActionListener(new ActionListener() {
             @Override
@@ -511,6 +511,42 @@ public class MainController {
                     }
                 });
                 polarProjection.execute();
+            }
+        });
+
+        mainView.getButtonUnrollVessel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create copy using cursors
+                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
+                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
+                net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
+                while (srcCursor.hasNext()) {
+                    dstCursor.next().set(srcCursor.next());
+                }
+                // Convert to ImagePlus
+                ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
+                impFloat.resetDisplayRange();
+                UnrollVesselWorker unrollVesselWorker = new UnrollVesselWorker(
+                        impFloat,
+                        vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
+                        vesselsSegmentationModel.getCentroidHashMap()
+                );
+                unrollVesselWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if ("state".equals(evt.getPropertyName()) &&
+                                evt.getNewValue() == SwingWorker.StateValue.DONE){
+                            ImagePlus vessel1Unrolled= unrollVesselWorker.getVessel1Unrolled();
+                            ImagePlus vessel2Unrolled= unrollVesselWorker.getVessel2Unrolled();
+                            vessel1Unrolled.setTitle("Vessel 1 Unrolled");
+                            vessel2Unrolled.setTitle("Vessel 2 Unrolled");
+                            vessel1Unrolled.show();
+                            vessel2Unrolled.show();
+                        }
+                    }
+                });
+                unrollVesselWorker.execute();
             }
         });
         //--------------MAIN WINDOW-----------------------------------------
