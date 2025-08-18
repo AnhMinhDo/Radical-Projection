@@ -25,7 +25,7 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
     private ImagePlus finalSegmentation;
     private ImagePlus edgeBinaryMaskImagePlus;
     private HashMap<Integer, ArrayList<Point>> centroidHashMap;
-    private ImagePlus stackWithVesselEdgeCentroidOverlay;
+//    private ImagePlus stackWithVesselEdgeCentroidOverlay;
     private ImagePlus edgeCentroidImagePlus;
 
     public SegmentWholeStackWorker(RandomAccessibleInterval<FloatType> hybridStackSmoothed,
@@ -60,9 +60,9 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
         return centroidHashMap;
     }
 
-    public ImagePlus getStackWithVesselEdgeCentroidOverlay() {
-        return stackWithVesselEdgeCentroidOverlay;
-    }
+//    public ImagePlus getStackWithVesselEdgeCentroidOverlay() {
+//        return stackWithVesselEdgeCentroidOverlay;
+//    }
 
     @Override
     protected Void doInBackground() throws Exception {
@@ -88,7 +88,7 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
         this.finalSegmentation = recon.processWholeStack();
         this.edgeBinaryMaskImagePlus = recon.getEdgeBinaryMaskImagePlus();
         this.centroidHashMap = recon.getCentroidHashMap();
-        this.stackWithVesselEdgeCentroidOverlay = recon.getStackWithVesselEdgeCentroidOverlay();
+//        this.stackWithVesselEdgeCentroidOverlay = recon.getStackWithVesselEdgeCentroidOverlay();
         this.edgeCentroidImagePlus = recon.getEdgeCentroidMaskImgPlus();
         return null;
     }
