@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PolarProjectionWorker extends SwingWorker<Void, Void> {
-    private ImagePlus hybridStack;
-    private ImagePlus edgeBinaryMaskEdge;
-    private ArrayList<Point> centroidListVessel1;
-    private ArrayList<Point> centroidListVessel2;
+    private final ImagePlus hybridStack;
+    private final ImagePlus edgeBinaryMaskEdge;
+    private final ArrayList<Point> centroidListVessel1;
+    private final ArrayList<Point> centroidListVessel2;
     private ImagePlus vessel1PolarProjection;
     private ImagePlus vessel2PolarProjection;
 
@@ -34,11 +34,11 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
     }
 
     @Override
-    protected Void doInBackground() throws Exception {
+    protected Void doInBackground() {
         PolarProjection polarProjection1 = new PolarProjection(hybridStack,
                 edgeBinaryMaskEdge,
                 centroidListVessel1,
-                5
+                5 // 5 is considered adequately small
                 );
         vessel1PolarProjection=polarProjection1.process();
         PolarProjection polarProjection2 = new PolarProjection(hybridStack,
