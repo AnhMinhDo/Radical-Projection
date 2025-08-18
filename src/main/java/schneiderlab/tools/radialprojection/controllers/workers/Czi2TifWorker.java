@@ -5,13 +5,13 @@ import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.R
 
 import javax.swing.*;
 
-public class Czi2TifWorker extends SwingWorker {
-    private String folderPath;
-    private boolean backgroundSubtraction;
-    private int rolling;
-    private int saturated;
-    private boolean isRotate;
-    private RotateDirection rotateDirection;
+public class Czi2TifWorker extends SwingWorker <Void, Void>{
+    private final String folderPath;
+    private final boolean backgroundSubtraction;
+    private final int rolling;
+    private final int saturated;
+    private final boolean isRotate;
+    private final RotateDirection rotateDirection;
 
     public Czi2TifWorker(String folderPath,
                          boolean backgroundSubtraction,
@@ -28,7 +28,7 @@ public class Czi2TifWorker extends SwingWorker {
     }
 
     @Override
-    protected Object doInBackground() throws Exception {
+    protected Void doInBackground() {
         CZIProcessor.convertingCZItoTIFF(folderPath,
                 backgroundSubtraction,
                 rolling,
