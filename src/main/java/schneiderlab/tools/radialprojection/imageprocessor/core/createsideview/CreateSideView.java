@@ -19,12 +19,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.scijava.Context;
-import org.scijava.app.StatusService;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.io.File;
 
 import static ij.IJ.debugMode;
 
@@ -34,7 +33,6 @@ public class CreateSideView {
     private final int targetXYpixelSize;
     private final int targetZpixelSize;
     private final OpService ops;
-
 
     public CreateSideView(Context context,
                           Path filePath,
@@ -48,9 +46,27 @@ public class CreateSideView {
 
     }
 
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private int currentProgress;
+    private final double totalNumberOfSteps=10;
+
+    public void setNewProgressValue(int newProgressValue) {
+        int previousProgress = this.currentProgress;
+        this.currentProgress = newProgressValue;
+        this.pcs.firePropertyChange("currentSlice", previousProgress, currentProgress);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+
     public Img<UnsignedShortType> process() throws Exception {
         // get the status Service
-        StatusService statusService = context.getService(StatusService.class);
+//        StatusService statusService = context.getService(StatusService.class);
         // Get DatasetService and UIService from context
         IJ.showStatus("loading file: "+filePath.getFileName().toString());
         DatasetIOService ioService = context.getService(DatasetIOService.class);
