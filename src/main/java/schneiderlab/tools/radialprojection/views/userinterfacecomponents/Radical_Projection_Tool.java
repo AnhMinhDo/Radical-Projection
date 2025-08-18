@@ -233,6 +233,11 @@ public class Radical_Projection_Tool extends JFrame {
 	public JTextField getTextFieldRadialProjection() {return textFieldRadialProjection;}
 
 	public JProgressBar getProgressBarVesselSegmentation(){return progressBarVesselSegmentation;}
+
+	public JPanel getPanel3RadialProjection() { return panel3RadialProjection;}
+
+	public JButton getButtonUnrollVessel() { return buttonUnrollVessel; }
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner Educational license - Anh Minh Do
@@ -291,7 +296,7 @@ public class Radical_Projection_Tool extends JFrame {
 		labelFileNameRadialProjection = new JLabel();
 		textFieldRadialProjection = new JTextField();
 		buttonRunRadialProjection = new JButton();
-		button2 = new JButton();
+		buttonUnrollVessel = new JButton();
 		button5 = new JButton();
 		panel4Analysis = new JPanel();
 		tabbedPane1 = new JTabbedPane();
@@ -650,9 +655,9 @@ public class Radical_Projection_Tool extends JFrame {
 				buttonRunRadialProjection.setText("Radial Projection");
 				panel3RadialProjection.add(buttonRunRadialProjection, "cell 0 1 2 1");
 
-				//---- button2 ----
-				button2.setText("Unrolling Vessel");
-				panel3RadialProjection.add(button2, "cell 0 2 2 1");
+				//---- buttonUnrollVessel ----
+				buttonUnrollVessel.setText("Unrolling Vessel");
+				panel3RadialProjection.add(buttonUnrollVessel, "cell 0 2 2 1");
 
 				//---- button5 ----
 				button5.setText("Move to Analysis");
@@ -879,7 +884,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private JLabel labelFileNameRadialProjection;
 	private JTextField textFieldRadialProjection;
 	private JButton buttonRunRadialProjection;
-	private JButton button2;
+	private JButton buttonUnrollVessel;
 	private JButton button5;
 	private JPanel panel4Analysis;
 	private JTabbedPane tabbedPane1;
