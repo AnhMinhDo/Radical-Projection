@@ -14,12 +14,12 @@ import java.beans.PropertyChangeListener;
 
 public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleInterval<FloatType>, Void> {
     private ImgPlus<UnsignedShortType> sideView;
-    private int ligninToCelluloseWeight;
-    private int windowSizeinMicroMeter;
+    private final int ligninToCelluloseWeight;
+    private final int windowSizeinMicroMeter;
     private int windowSizeinSlideNumber;
-    private double sigmaValueFilter;
+    private final double sigmaValueFilter;
     private double radius;
-    private Context context;
+    private final  Context context;
     private RandomAccessibleInterval<FloatType> hybridStackNonSmoothed;
     private RandomAccessibleInterval<FloatType> hybridStackSmoothed;
     private int width;
