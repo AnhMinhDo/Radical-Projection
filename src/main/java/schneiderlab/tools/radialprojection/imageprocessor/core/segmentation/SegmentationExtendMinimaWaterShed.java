@@ -14,16 +14,16 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.awt.*;
 import java.util.ArrayList;
 
-import static schneiderlab.tools.radialprojection.imageprocessor.core.utils.RadicalProjectionUtils.deepCopyPoints;
+import static schneiderlab.tools.radialprojection.imageprocessor.core.utils.RadialProjectionUtils.deepCopyPoints;
 
 public class SegmentationExtendMinimaWaterShed {
-    private RandomAccessibleInterval<FloatType> inputSlice;
+    private final RandomAccessibleInterval<FloatType> inputSlice;
     private ArrayList<Point> clickCoordinate;
-    private int width;
-    private int height;
-    private Point pointForBackground;
-    private float radius;
-    private int pixelScaleInNanometer;
+    private final int width;
+    private final int height;
+    private final Point pointForBackground;
+    private final float radius;
+    private final int pixelScaleInNanometer;
     private ImagePlus inputSliceImagePlus;
 
     public SegmentationExtendMinimaWaterShed( ArrayList<Point> clickCoordinate,
