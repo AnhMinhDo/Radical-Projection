@@ -4,33 +4,43 @@ import ij.ImagePlus;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Vessel {
-    private ArrayList<Point> centroidList;
-    private ArrayList<Point> clickList;
-    private ArrayList<Integer[]> trueLabelList;
+    private final ArrayList<VesselSliceData>  vesselSliceDataArrayList;
+    private final ArrayList<Point> centroidArrayList ;
     private ImagePlus radialProjected;
     private ImagePlus unrolled;
 
-    public Vessel(int numberOfPossibleCentroids) {
-        this.centroidList= new ArrayList<>(numberOfPossibleCentroids);
-        this.clickList= new ArrayList<>(numberOfPossibleCentroids);
-        this.trueLabelList= new ArrayList<>(numberOfPossibleCentroids);
+    public Vessel(int numberOfSliceInStack) {
+        this.vesselSliceDataArrayList= new ArrayList<>(numberOfSliceInStack);
+        this.centroidArrayList = new ArrayList<>(numberOfSliceInStack);
     }
 
-    public ArrayList<Point> getCentroidList() {
-        return centroidList;
+    public void addVesselSliceData(Point clickPoint, Point centroid, int trueSliceIndex, int trueLabel){
+        vesselSliceDataArrayList.add(new VesselSliceData(centroid,clickPoint, trueSliceIndex,trueLabel));
     }
 
-    public ArrayList<Point> getClickList() {
-        return clickList;
+    public Point getClickPoint(int index){
+        return vesselSliceDataArrayList.get(index).getClickPoint();
+    }
+    public Point getCentroid(int index){
+        return vesselSliceDataArrayList.get(index).getCentroid();
+    }
+    public int getTrueSliceIndex(int index){
+        return vesselSliceDataArrayList.get(index).getTrueSliceIndex();
+    }
+    public int getTrueLabel(int index){
+        return vesselSliceDataArrayList.get(index).getTrueLabel();
     }
 
-    public ArrayList<Integer[]> getTrueLabelList() {
-        return trueLabelList;
+    public ArrayList<Point> getCentroidArrayList(){
+        if (centroidArrayList.isEmpty()){
+            generateCentroidArrayList();
+            return this.centroidArrayList;
+        } else {
+            return this.centroidArrayList;
+        }
     }
-
     public ImagePlus getRadialProjected() {
         return radialProjected;
     }
@@ -46,4 +56,37 @@ public class Vessel {
     public void setUnrolled(ImagePlus unrolled) {
         this.unrolled = unrolled;
     }
+
+    public void generateCentroidArrayList(){
+        for (VesselSliceData vesselSliceData:vesselSliceDataArrayList){
+            centroidArrayList.add(vesselSliceData.getCentroid());
+        }
+    }
+
+    private static class VesselSliceData{
+        private final Point centroid;
+        private final Point clickPoint;
+        private final int trueSliceIndex;
+        private final int trueLabel;
+
+        public VesselSliceData(Point centroid, Point clickPoint, int sliceIndex, int label) {
+            this.centroid = centroid;
+            this.clickPoint = clickPoint;
+            this.trueSliceIndex = sliceIndex;
+            this.trueLabel = label;
+        }
+        public Point getCentroid() {
+            return centroid;
+        }
+        public Point getClickPoint() {
+            return clickPoint;
+        }
+        public int getTrueSliceIndex() {
+            return trueSliceIndex;
+        }
+        public int getTrueLabel() {
+            return trueLabel;
+        }
+    }
+
 }
