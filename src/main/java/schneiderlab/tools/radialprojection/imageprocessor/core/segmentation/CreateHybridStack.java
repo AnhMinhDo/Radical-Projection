@@ -151,23 +151,26 @@ public class CreateHybridStack {
 //        ImageJFunctions.show(hybrid,"Hybrid image");
         // perform window sliding Projection, each new slide is the average projection of all the slide in the window
         WindowSlidingProjection wsp = new WindowSlidingProjection();
-        wsp.addPropertyChangeListener(new PropertyChangeListener() {
+        PropertyChangeListener slideProgressListener = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if("currentSlice".equals(evt.getPropertyName())){
-                    int currentSliceProcess = (int)evt.getNewValue();
-                    int progressValue = (int) Math.ceil((100.0/depth)*currentSliceProcess);
+                if ("currentSlice".equals(evt.getPropertyName())) {
+                    int currentSliceProcess = (int) evt.getNewValue();
+                    int progressValue = (int) Math.ceil((100.0 / depth) * currentSliceProcess);
                     setNewCurrentProgress(progressValue);
                 }
             }
-        });
+        };
+        wsp.addPropertyChangeListener(slideProgressListener);
         wsp.averageProjection(hybrid,projectedStack,windowSize,(int)depth,(int)width,(int)height);
+//        wsp.removePropertyChangeListener(slideProgressListener);
 //        ImageJFunctions.show(projectedStack, "Projected Stack");
         // smooth the image using gaussian filter
         ops.filter().gauss(smoothedStack,projectedStack,sigmaValueForGaussianFilter);
         // assign to instance variable
         this.smoothedStackWidth = (int) width;
         this.getSmoothedStackHeight = (int) height;
+//        cellulose = null; lignin = null; celluloseMultiplied = null; ligninMultiplied = null;
         hybridSmoothedStack=smoothedStack;
         return smoothedStack;
     }
