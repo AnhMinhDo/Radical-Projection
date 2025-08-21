@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import net.imagej.ops.Ops;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
+import schneiderlab.tools.radialprojection.imageprocessor.core.Vessel;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.Reconstruction;
 
 import javax.swing.*;
@@ -25,8 +26,9 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
     private ImagePlus finalSegmentation;
     private ImagePlus edgeBinaryMaskImagePlus;
     private HashMap<Integer, ArrayList<Point>> centroidHashMap;
-//    private ImagePlus stackWithVesselEdgeCentroidOverlay;
     private ImagePlus edgeCentroidImagePlus;
+    private ArrayList<Vessel> vesselArrayList;
+
 
     public SegmentWholeStackWorker(RandomAccessibleInterval<FloatType> hybridStackSmoothed,
                                    int hybridStackSmoothedWidth,
@@ -55,14 +57,11 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
     public ImagePlus getEdgeCentroidMaskImagePlus() {
         return edgeCentroidImagePlus;
     }
-
+    public ArrayList<Vessel> getVesselArrayList(){return vesselArrayList;}
     public HashMap<Integer, ArrayList<Point>> getCentroidHashMap() {
         return centroidHashMap;
     }
 
-//    public ImagePlus getStackWithVesselEdgeCentroidOverlay() {
-//        return stackWithVesselEdgeCentroidOverlay;
-//    }
 
     @Override
     protected Void doInBackground() throws Exception {
@@ -87,9 +86,9 @@ public class SegmentWholeStackWorker extends SwingWorker<Void, Void> {
         });
         this.finalSegmentation = recon.processWholeStack();
         this.edgeBinaryMaskImagePlus = recon.getEdgeBinaryMaskImagePlus();
-        this.centroidHashMap = recon.getCentroidHashMap();
-//        this.stackWithVesselEdgeCentroidOverlay = recon.getStackWithVesselEdgeCentroidOverlay();
         this.edgeCentroidImagePlus = recon.getEdgeCentroidMaskImgPlus();
+        this.centroidHashMap = recon.getCentroidHashMap();
+        this.vesselArrayList = recon.getVesselsArray();
         return null;
     }
 }
