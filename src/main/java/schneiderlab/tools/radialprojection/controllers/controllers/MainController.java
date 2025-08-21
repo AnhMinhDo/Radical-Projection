@@ -3,13 +3,10 @@ package schneiderlab.tools.radialprojection.controllers.controllers;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
-import io.reactivex.Single;
-import net.imagej.ImgPlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
@@ -37,13 +34,11 @@ import java.beans.PropertyChangeListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainController {
-    private Radical_Projection_Tool mainView;
+    private final Radical_Projection_Tool mainView;
     private ArrayList<Path> processedFileInCreateSideView;
     private final Context context;
-    private Path currentFilePath;
     private ImagePlus finalSegmentation;
 
     public MainController(Radical_Projection_Tool mainView,
@@ -136,8 +131,8 @@ public class MainController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String folderPath = cziToTifModel.getDirPath();
-                int rolling = (int) cziToTifModel.getRollingValue();
-                int saturated = (int) cziToTifModel.getSaturationValue();
+                int rolling = cziToTifModel.getRollingValue();
+                int saturated = cziToTifModel.getSaturationValue();
                 RotateDirection rotateDirection = cziToTifModel.getRotateDirection();
                 boolean isRotate = cziToTifModel.isRotate();
                 boolean isBackgroundSubtraction = cziToTifModel.isBgSub();
@@ -309,7 +304,6 @@ public class MainController {
                         }
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
-                                //TODO: get the result
                                 vesselsSegmentationModel.setHybridStackNonSmoothed(pasw.getHybridStackNonSmoothed());
                                 vesselsSegmentationModel.setHybridStackSmoothed(pasw.getHybridStackSmoothed());
                                 vesselsSegmentationModel.setHybridStackSmoothedWidth(pasw.getWidth());
@@ -362,7 +356,7 @@ public class MainController {
                 int imgHeight = vesselsSegmentationModel.getImpInByte().getHeight() * (int) magnificationLevel;
                 // position the window at  bottom left
                 int xlocation = 10;
-                int ylocation = screenHeight-imgHeight-((int)screenHeight*4/100); // screenHeight*4/100 to create a little bit space
+                int ylocation = screenHeight-imgHeight-(screenHeight *4/100); // screenHeight*4/100 to create a little bit space
                 ImageWindow window = vesselsSegmentationModel.getImpInByte().getWindow();
                 window.setLocationAndSize( xlocation,ylocation ,imgWidth,imgHeight);
                 // add eventListener to canvas
@@ -446,6 +440,7 @@ public class MainController {
                             finalSegmentation=batchSegmentationWorker.getFinalSegmentation();
                             vesselsSegmentationModel.setEdgeBinaryMaskImagePlus(batchSegmentationWorker.getEdgeBinaryMaskImagePlus());
                             vesselsSegmentationModel.setCentroidHashMap(batchSegmentationWorker.getCentroidHashMap());
+                            vesselsSegmentationModel.setVesselArrayList(batchSegmentationWorker.getVesselArrayList());
 //                            ImagePlus hybridStackWithEdgeCentroidOverlay = batchSegmentationWorker.getStackWithVesselEdgeCentroidOverlay();
                             mainView.getTextField2StatusVesselSegmentation().setText("Complete processing whole stack ");
                             mainView.getButtonMoveToRadialProjection().setEnabled(true);
@@ -453,7 +448,6 @@ public class MainController {
                             mainView.getProgressBarVesselSegmentation().setToolTipText(100+"%");
                             batchSegmentationWorker.getFinalSegmentation().show();
                             batchSegmentationWorker.getEdgeCentroidMaskImagePlus().show();
-//                            hybridStackWithEdgeCentroidOverlay.show(); //TODO:
                         }
                     }
                 });
@@ -494,19 +488,17 @@ public class MainController {
                 PolarProjectionWorker polarProjection = new PolarProjectionWorker(
                         impFloat,
                         vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
-                        vesselsSegmentationModel.getCentroidHashMap()
+                        vesselsSegmentationModel.getVesselArrayList()
                 );
                 polarProjection.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
-                            ImagePlus vessel1PolarProjection= polarProjection.getVessel1PolarProjection();
-                            ImagePlus vessel2PolarProjection= polarProjection.getVessel2PolarProjection();
-                            vessel1PolarProjection.setTitle("Vessel 1 Radial Projection");
-                            vessel2PolarProjection.setTitle("Vessel 2 Radial Projection");
-                            vessel1PolarProjection.show();
-                            vessel2PolarProjection.show();
+                            ArrayList<ImagePlus> vesselRadialProjectionList = polarProjection.getVesselPolarProjectionArrayList();
+                            for (ImagePlus imagePlus:vesselRadialProjectionList){
+                                imagePlus.show();
+                            }
                         }
                     }
                 });
@@ -530,19 +522,17 @@ public class MainController {
                 UnrollVesselWorker unrollVesselWorker = new UnrollVesselWorker(
                         impFloat,
                         vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
-                        vesselsSegmentationModel.getCentroidHashMap()
+                        vesselsSegmentationModel.getVesselArrayList()
                 );
                 unrollVesselWorker.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
-                            ImagePlus vessel1Unrolled= unrollVesselWorker.getVessel1Unrolled();
-                            ImagePlus vessel2Unrolled= unrollVesselWorker.getVessel2Unrolled();
-                            vessel1Unrolled.setTitle("Vessel 1 Unrolled");
-                            vessel2Unrolled.setTitle("Vessel 2 Unrolled");
-                            vessel1Unrolled.show();
-                            vessel2Unrolled.show();
+                            ArrayList<ImagePlus> vesselUnrolledList = unrollVesselWorker.getVesselPolarProjectionArrayList();
+                            for (ImagePlus imagePlus:vesselUnrolledList ){
+                                imagePlus.show();
+                            }
                         }
                     }
                 });
