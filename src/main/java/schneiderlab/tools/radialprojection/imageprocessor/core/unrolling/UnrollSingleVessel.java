@@ -89,7 +89,6 @@ public class UnrollSingleVessel {
         int previousIntersectionIdx = 0;
         Point firstIntersection;
         for (int i = 0; i < angleCount; i ++) { // for each angle
-//            System.err.println( "current slice Index: "+ currentSliceIdx + "  " + "Current angle: " + i);
             if(i == 0){ // for the first angle,
                 double rad = Math.toRadians(0); // get the value in radian of the current angle, the first angle is 0 degree
                 double x2 = cx + maxRadius * Math.cos(rad);
