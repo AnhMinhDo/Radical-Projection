@@ -212,6 +212,11 @@ public class MainController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainView.getTextField2StatusVesselSegmentation().setText("Creating Side View...");
+                mainView.getButtonProjAndSmooth().setEnabled(false);
+                mainView.getButtonSelectCentroid().setEnabled(false);
+                mainView.getButtonWatershed().setEnabled(false);
+                mainView.getButtonProcessWholeStack().setEnabled(false);
+                mainView.getButtonMoveToRadialProjection().setEnabled(false);
                 try {
                     String fileToProcess = (String) mainView.getTableAddedFileVesselSegmentation()
                             .getModel()
@@ -222,6 +227,14 @@ public class MainController {
                             Paths.get(fileToProcess),
                             context
                     );
+                    createSideViewWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                        @Override
+                        public void propertyChange(PropertyChangeEvent evt) {
+                            if ("progress".equals(evt.getPropertyName())){
+                                mainView.getProgressBarVesselSegmentation().setValue((int)evt.getNewValue());
+                            }
+                        }
+                    });
                     createSideViewWorker.addPropertyChangeListener(propChangeEvent -> {
                         if ("state".equals(propChangeEvent.getPropertyName()) &&
                                 propChangeEvent.getNewValue() == SwingWorker.StateValue.DONE) {
@@ -288,6 +301,10 @@ public class MainController {
             @Override
             public void actionPerformed(ActionEvent e) {
                     mainView.getTextField2StatusVesselSegmentation().setText("Creating hybrid stack and smoothing...");
+                    mainView.getButtonSelectCentroid().setEnabled(false);
+                    mainView.getButtonWatershed().setEnabled(false);
+                    mainView.getButtonProcessWholeStack().setEnabled(false);
+                    mainView.getButtonMoveToRadialProjection().setEnabled(false);
                 ProjectionAndSmoothingWorker pasw = new ProjectionAndSmoothingWorker(vesselsSegmentationModel.getSideView(),
                         mainView.getSliderHybridWeight().getValue(),
                         (int)mainView.getSpinnerAnalysisWindow().getValue(),
@@ -324,6 +341,9 @@ public class MainController {
         mainView.getButtonSelectCentroid().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                mainView.getButtonWatershed().setEnabled(false);
+                mainView.getButtonProcessWholeStack().setEnabled(false);
+                mainView.getButtonMoveToRadialProjection().setEnabled(false);
                 RandomAccessibleInterval<FloatType>	smoothedStack = vesselsSegmentationModel.getHybridStackSmoothed();
                 int slideForTuning = (int)mainView.getSpinnerSliceIndexForTuning().getValue();
                 RandomAccessibleInterval<FloatType> just1Slide = Views.hyperSlice(smoothedStack,2,slideForTuning);
