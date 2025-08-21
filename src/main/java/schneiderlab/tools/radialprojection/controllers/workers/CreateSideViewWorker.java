@@ -10,6 +10,8 @@ import org.scijava.Context;
 import schneiderlab.tools.radialprojection.imageprocessor.core.createsideview.CreateSideView;
 
 import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.nio.file.Path;
 
 public class CreateSideViewWorker extends SwingWorker<ImgPlus<UnsignedShortType>, Void> {
@@ -32,6 +34,15 @@ public class CreateSideViewWorker extends SwingWorker<ImgPlus<UnsignedShortType>
                 filePath,
                 targetXYpixelSize,
                 targetZpixelSize);
+        PropertyChangeListener listener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if("progress".equals(evt.getPropertyName())){
+                    setProgress((int)evt.getNewValue());
+                }
+            }
+        };
+        createSideView.addPropertyChangeListener(listener);
         sideViewImg = createSideView.process();
         ImgPlus<UnsignedShortType> sideView = new ImgPlus<>(sideViewImg);
         // Add meta data

@@ -53,7 +53,7 @@ public class CreateSideView {
     public void setNewProgressValue(int newProgressValue) {
         int previousProgress = this.currentProgress;
         this.currentProgress = newProgressValue;
-        this.pcs.firePropertyChange("currentSlice", previousProgress, currentProgress);
+        this.pcs.firePropertyChange("progress", previousProgress, currentProgress);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -70,22 +70,25 @@ public class CreateSideView {
         // Get DatasetService and UIService from context
         IJ.showStatus("loading file: "+filePath.getFileName().toString());
         DatasetIOService ioService = context.getService(DatasetIOService.class);
+        setNewProgressValue((int)(1*(100/totalNumberOfSteps))); // update ProgressBar
         // load the image
         Dataset img = ioService.open(filePath.toString());
         IJ.showStatus("checking image type ....");
         // open file with file path, pre-condition: the input image is 16-bit
         ImgPlus<?> genericImgPlus = img.getImgPlus();
+        setNewProgressValue((int)(2*(100/totalNumberOfSteps))); // update ProgressBar
         // Verify the type
         if (!(genericImgPlus.firstElement() instanceof UnsignedShortType)) {
             throw new IllegalArgumentException("Expected ShortType(16-bit) image");
         }
-
+        setNewProgressValue((int)(3*(100/totalNumberOfSteps))); // update ProgressBar
         ImgPlus<UnsignedShortType> imgPlus = (ImgPlus<UnsignedShortType>) genericImgPlus;
 
         // split the channels
         int channelDim = imgPlus.dimensionIndex(Axes.CHANNEL);
         boolean hasChannels = (channelDim >= 0);
         long numChannels = hasChannels ? imgPlus.dimension(channelDim) : 1;
+        setNewProgressValue((int)(4*(100/totalNumberOfSteps))); // update ProgressBar
         // container for post-processed channels
         ArrayList<RandomAccessibleInterval<UnsignedShortType>> processedChannels = new ArrayList<>();
         // debugging
@@ -108,12 +111,15 @@ public class CreateSideView {
         int xDim = imgPlus.dimensionIndex(Axes.X);
         int yDim = imgPlus.dimensionIndex(Axes.Y);
         int zDim = imgPlus.dimensionIndex(Axes.Z);
+        setNewProgressValue((int)(5*(100/totalNumberOfSteps))); // update ProgressBar
         // get the spatial dimension size
         long width = imgPlus.dimension(xDim);
         long height = imgPlus.dimension(yDim);
         long depth = imgPlus.dimension(zDim);
+        setNewProgressValue((int)(6*(100/totalNumberOfSteps))); // update ProgressBar
         IJ.showStatus("Processing image: "+filePath.getFileName().toString());
         // Go through each channel and process
+        setNewProgressValue((int)(7*(100/totalNumberOfSteps))); // update ProgressBar
         for (int c = 0; c < numChannels; c++) {
             RandomAccessibleInterval<FloatType> channelImg = hasChannels
                     ? ops.convert().float32(Views.hyperSlice(imgPlus, channelDim, c))
@@ -197,8 +203,10 @@ public class CreateSideView {
         // the 2 channels
         RandomAccessibleInterval<UnsignedShortType> rai1 = processedChannels.get(0);
         RandomAccessibleInterval<UnsignedShortType> rai2 = processedChannels.get(1);
+        setNewProgressValue((int)(8*(100/totalNumberOfSteps))); // update ProgressBar
         // create new imgplus for output
         ImgPlus<UnsignedShortType> outputImgPlus = createImgPlusFrom3DChannels(rai1, rai2);
+        setNewProgressValue((int)(9*(100/totalNumberOfSteps))); // update ProgressBar
         // add the channels to empty
         copyToChannel(rai1,outputImgPlus,0);
         copyToChannel(rai2,outputImgPlus,1);
@@ -208,6 +216,7 @@ public class CreateSideView {
 //        saver.saveImg(newOutputFilePath.toString(), outputImgPlus);
 //        IJ.showStatus("Finish file: "+filePath.getFileName().toString());
 //        if (debugMode) IJ.log("Saved side view image: " + newOutputFilePath);
+        setNewProgressValue((int)(10*(100/totalNumberOfSteps))); // update ProgressBar
         return outputImgPlus;
     }
 
