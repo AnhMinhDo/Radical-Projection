@@ -7,6 +7,7 @@ import net.imagej.ImgPlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import schneiderlab.tools.radialprojection.imageprocessor.core.Vessel;
 
 import java.awt.*;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class VesselsSegmentationModel {
     private final ArrayList<Point> coordinates = new ArrayList<>() ;
     private final ArrayList<Point> coordinatesBatch = new ArrayList<>() ;
     private HashMap<Integer, ArrayList<Point>> centroidHashMap;
+    private ArrayList<Vessel> vesselArrayList;
 
     public VesselsSegmentationModel() {
     }
@@ -147,6 +149,14 @@ public class VesselsSegmentationModel {
 
     public void setCentroidHashMap(HashMap<Integer, ArrayList<Point>> centroidHashMap) {
         this.centroidHashMap = centroidHashMap;
+    }
+
+    public ArrayList<Vessel> getVesselArrayList() {
+        return vesselArrayList;
+    }
+
+    public void setVesselArrayList(ArrayList<Vessel> vesselArrayList) {
+        this.vesselArrayList = vesselArrayList;
     }
 
     public int getXyPixelSize() {
