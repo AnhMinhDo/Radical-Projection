@@ -1,6 +1,5 @@
 package schneiderlab.tools.radialprojection.controllers.workers;
 
-import ij.IJ;
 import net.imagej.ImgPlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -9,11 +8,10 @@ import org.scijava.Context;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.CreateHybridStack;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleInterval<FloatType>, Void> {
-    private ImgPlus<UnsignedShortType> sideView;
+    private final ImgPlus<UnsignedShortType> sideView;
     private final int ligninToCelluloseWeight;
     private final int windowSizeinMicroMeter;
     private int windowSizeinSlideNumber;
@@ -47,10 +45,6 @@ public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleIn
         return hybridStackSmoothed;
     }
 
-    public double getRadius() {
-        return radius;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -68,15 +62,14 @@ public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleIn
                 windowSizeinSlideNumber,
                 sigmaValueFilter,
                 radius);
-        chs.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if("progress".equals(evt.getPropertyName())){
-                    setProgress((int)evt.getNewValue());
-                }
+        PropertyChangeListener listener = evt -> {
+            if ("progress".equals(evt.getPropertyName())) {
+                setProgress((int) evt.getNewValue());
             }
-        });
+        };
+        chs.addPropertyChangeListener(listener);
         hybridStackSmoothed = chs.process();
+//        chs.removePropertyChangeListener(listener);
         hybridStackNonSmoothed = chs.getHybridNonSmoothedStack();
         this.radius = chs.getRadius();
         this.width = chs.getSmoothedStackWidth();
