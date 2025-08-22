@@ -15,9 +15,11 @@ import schneiderlab.tools.radialprojection.controllers.uiaction.*;
 import schneiderlab.tools.radialprojection.controllers.uiaction.czitotif.BrowseButtonCZIToTif;
 import schneiderlab.tools.radialprojection.controllers.uiaction.mainwindow.AddSavingActionWhenMainWindowClosed;
 import schneiderlab.tools.radialprojection.controllers.workers.*;
+import schneiderlab.tools.radialprojection.imageprocessor.core.Vessel;
 import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.RotateDirection;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.Reconstruction;
 import schneiderlab.tools.radialprojection.models.czitotifmodel.CziToTifModel;
+import schneiderlab.tools.radialprojection.models.radialprojection.RadialProjectionModel;
 import schneiderlab.tools.radialprojection.models.radialprojection.VesselsSegmentationModel;
 import schneiderlab.tools.radialprojection.views.userinterfacecomponents.Radical_Projection_Tool;
 
@@ -490,7 +492,9 @@ public class MainController {
         mainView.getSpinnerSliceIndexForTuning().setValue(vesselsSegmentationModel.getSliceIndexForTuning());
         mainView.getSpinnerInnerVesselRadius().setValue(vesselsSegmentationModel.getInnerVesselRadius());
         mainView.getSliderHybridWeight().setValue(vesselsSegmentationModel.getCelluloseToLigninRatio());
-        //---------- - 2.Radial Projection and Unrolling -------------------------------
+        //---------- - 3.Radial Projection and Unrolling -------------------------------
+        // initial the model for radial projection step
+        RadialProjectionModel radialProjectionModel = new RadialProjectionModel();
         // perform Radial Projection
         mainView.getButtonRunRadialProjection().addActionListener(new ActionListener() {
             @Override
@@ -516,8 +520,9 @@ public class MainController {
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
                             ArrayList<ImagePlus> vesselRadialProjectionList = polarProjection.getVesselPolarProjectionArrayList();
-                            for (ImagePlus imagePlus:vesselRadialProjectionList){
-                                imagePlus.show();
+                            radialProjectionModel.setVesselArrayList(vesselsSegmentationModel.getVesselArrayList()); // transfer the vesselArrayList to from segmentation Model to radialProjectionModel
+                            for(ImagePlus radialProjectedImage : vesselRadialProjectionList){
+                                radialProjectedImage.show();
                             }
                         }
                     }
@@ -550,8 +555,8 @@ public class MainController {
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
                             ArrayList<ImagePlus> vesselUnrolledList = unrollVesselWorker.getVesselPolarProjectionArrayList();
-                            for (ImagePlus imagePlus:vesselUnrolledList ){
-                                imagePlus.show();
+                            for(ImagePlus unrolledImage : vesselUnrolledList){
+                                unrolledImage.show();
                             }
                         }
                     }
@@ -559,6 +564,8 @@ public class MainController {
                 unrollVesselWorker.execute();
             }
         });
+
+
         //--------------MAIN WINDOW-----------------------------------------
         // TODO:Save all the parameters of current session to imagej/Fiji Prefs
         mainView.getParentFrame().addWindowListener(
