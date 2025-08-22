@@ -8,6 +8,9 @@ import java.util.ArrayList;
 public class Vessel {
     private final ArrayList<VesselSliceData>  vesselSliceDataArrayList;
     private final ArrayList<Point> centroidArrayList ;
+    private ImagePlus radialProjection;
+    private ImagePlus unrolledVessel;
+
 
     public Vessel(int numberOfSliceInStack) {
         this.vesselSliceDataArrayList= new ArrayList<>(numberOfSliceInStack);
@@ -44,6 +47,22 @@ public class Vessel {
         for (VesselSliceData vesselSliceData:vesselSliceDataArrayList){
             centroidArrayList.add(vesselSliceData.getCentroid());
         }
+    }
+
+    public ImagePlus getRadialProjection() {
+        return radialProjection;
+    }
+
+    public void setRadialProjection(ImagePlus radialProjection) {
+        this.radialProjection = radialProjection;
+    }
+
+    public ImagePlus getUnrolledVessel() {
+        return unrolledVessel;
+    }
+
+    public void setUnrolledVessel(ImagePlus unrolledVessel) {
+        this.unrolledVessel = unrolledVessel;
     }
 
     private static class VesselSliceData{
