@@ -39,6 +39,7 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
             String imageTitle = "Radial Projection Vessel " + (i + 1);
             vesselPolarProjection.setTitle(imageTitle);
             vesselPolarProjectionArrayList.add(vesselPolarProjection);
+            vesselArrayList.get(i).setRadialProjection(vesselPolarProjection);
         }
         return null;
     }

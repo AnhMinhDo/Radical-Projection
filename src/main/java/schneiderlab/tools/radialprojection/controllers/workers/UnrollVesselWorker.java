@@ -40,6 +40,7 @@ public class UnrollVesselWorker extends SwingWorker<Void, Void> {
             String imageTitle = "Unrolled Vessel " + (i + 1);
             vesselUnrolled.setTitle(imageTitle);
             vesselUnrolledArrayList.add(vesselUnrolled);
+            vesselArrayList.get(i).setUnrolledVessel(vesselUnrolled);
         }
 
 
