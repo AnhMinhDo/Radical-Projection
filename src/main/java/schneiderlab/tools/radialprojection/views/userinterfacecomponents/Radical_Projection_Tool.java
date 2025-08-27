@@ -238,6 +238,8 @@ public class Radical_Projection_Tool extends JFrame {
 
 	public JButton getButtonUnrollVessel() { return buttonUnrollVessel; }
 
+	public JButton getButtonAnalysisSkeletonize() { return buttonAnalysisSkeletonize;}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner Educational license - Anh Minh Do
@@ -307,7 +309,7 @@ public class Radical_Projection_Tool extends JFrame {
 		scrollPane3 = new JScrollPane();
 		table3 = new JTable();
 		panel2 = new JPanel();
-		checkBox1 = new JCheckBox();
+		buttonAnalysisSkeletonize = new JButton();
 		panel8 = new JPanel();
 		checkBox2 = new JCheckBox();
 
@@ -777,11 +779,11 @@ public class Radical_Projection_Tool extends JFrame {
 							"[]" +
 							"[]"));
 
-						//---- checkBox1 ----
-						checkBox1.setText("use this parameter");
-						panel2.add(checkBox1, "cell 0 0");
+						//---- buttonAnalysisSkeletonize ----
+						buttonAnalysisSkeletonize.setText("Thresholding");
+						panel2.add(buttonAnalysisSkeletonize, "cell 0 0 2 1");
 					}
-					tabbedPane1.addTab("Parameter_1", panel2);
+					tabbedPane1.addTab("Bands & Gaps", panel2);
 
 					//======== panel8 ========
 					{
@@ -895,7 +897,7 @@ public class Radical_Projection_Tool extends JFrame {
 	private JScrollPane scrollPane3;
 	private JTable table3;
 	private JPanel panel2;
-	private JCheckBox checkBox1;
+	private JButton buttonAnalysisSkeletonize;
 	private JPanel panel8;
 	private JCheckBox checkBox2;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
