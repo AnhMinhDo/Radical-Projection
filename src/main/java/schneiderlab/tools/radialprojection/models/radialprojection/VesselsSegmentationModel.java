@@ -25,6 +25,8 @@ public class VesselsSegmentationModel {
     private double innerVesselRadius;
     private int CelluloseToLigninRatio;
     private ImgPlus<UnsignedShortType> sideView;
+    private RandomAccessibleInterval<FloatType> lignin;
+    private RandomAccessibleInterval<FloatType> cellulose;
     private RandomAccessibleInterval<FloatType> hybridStackNonSmoothed;
     private RandomAccessibleInterval<FloatType> hybridStackSmoothed;
     private int hybridStackSmoothedWidth;
@@ -117,6 +119,22 @@ public class VesselsSegmentationModel {
 
     public void setEdgeBinaryMaskImagePlus(ImagePlus edgeBinaryMaskImagePlus) {
         this.edgeBinaryMaskImagePlus = edgeBinaryMaskImagePlus;
+    }
+
+    public RandomAccessibleInterval<FloatType> getLignin() {
+        return lignin;
+    }
+
+    public void setLignin(RandomAccessibleInterval<FloatType> lignin) {
+        this.lignin = lignin;
+    }
+
+    public RandomAccessibleInterval<FloatType> getCellulose() {
+        return cellulose;
+    }
+
+    public void setCellulose(RandomAccessibleInterval<FloatType> cellulose) {
+        this.cellulose = cellulose;
     }
 
     public Overlay getOverlaySegmentation() {

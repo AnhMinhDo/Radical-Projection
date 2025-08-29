@@ -8,7 +8,9 @@ import java.util.ArrayList;
 public class Vessel {
     private final ArrayList<VesselSliceData>  vesselSliceDataArrayList;
     private final ArrayList<Point> centroidArrayList ;
-    private ImagePlus radialProjection;
+    private ImagePlus radialProjectionHybrid;
+    private ImagePlus radialProjectionCellulose;
+    private ImagePlus radialProjectionLignin;
     private ImagePlus unrolledVessel;
 
 
@@ -49,12 +51,28 @@ public class Vessel {
         }
     }
 
-    public ImagePlus getRadialProjection() {
-        return radialProjection;
+    public ImagePlus getRadialProjectionHybrid() {
+        return radialProjectionHybrid;
     }
 
-    public void setRadialProjection(ImagePlus radialProjection) {
-        this.radialProjection = radialProjection;
+    public void setRadialProjectionHybrid(ImagePlus radialProjectionHybrid) {
+        this.radialProjectionHybrid = radialProjectionHybrid;
+    }
+
+    public ImagePlus getRadialProjectionCellulose() {
+        return radialProjectionCellulose;
+    }
+
+    public void setRadialProjectionCellulose(ImagePlus radialProjectionCellulose) {
+        this.radialProjectionCellulose = radialProjectionCellulose;
+    }
+
+    public ImagePlus getRadialProjectionLignin() {
+        return radialProjectionLignin;
+    }
+
+    public void setRadialProjectionLignin(ImagePlus radialProjectionLignin) {
+        this.radialProjectionLignin = radialProjectionLignin;
     }
 
     public ImagePlus getUnrolledVessel() {
