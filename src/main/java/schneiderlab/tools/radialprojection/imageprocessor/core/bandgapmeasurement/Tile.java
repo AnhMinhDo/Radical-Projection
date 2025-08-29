@@ -50,8 +50,6 @@ public class Tile {
         return result;
     }
 
-
-
     public static void splitImage(ImagePlus imagePlus, List<Tile> tiles) {
         for (Tile t : tiles) {
             Roi roi = new Roi(t.getX(),t.getY(),t.getWidth(),t.getHeight());
@@ -88,7 +86,7 @@ public class Tile {
         return thresholdedMask;
     }
 
-    public void setImageProcessor(ShortProcessor shortProcessor) {
+    private void setImageProcessor(ShortProcessor shortProcessor) {
         this.shortProcessor = shortProcessor;
     }
 
