@@ -20,6 +20,8 @@ public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleIn
     private final  Context context;
     private RandomAccessibleInterval<FloatType> hybridStackNonSmoothed;
     private RandomAccessibleInterval<FloatType> hybridStackSmoothed;
+    private RandomAccessibleInterval<FloatType> lignin;
+    private RandomAccessibleInterval<FloatType> cellulose;
     private int width;
     private int height;
 
@@ -53,6 +55,10 @@ public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleIn
         return height;
     }
 
+    public RandomAccessibleInterval<FloatType> getLignin() {return lignin;}
+
+    public RandomAccessibleInterval<FloatType> getCellulose() {return cellulose;}
+
     @Override
     protected RandomAccessibleInterval<FloatType> doInBackground() throws Exception {
         windowSizeinSlideNumber = Math.round(windowSizeinMicroMeter/0.2f);
@@ -74,6 +80,8 @@ public class ProjectionAndSmoothingWorker extends SwingWorker<RandomAccessibleIn
         this.radius = chs.getRadius();
         this.width = chs.getSmoothedStackWidth();
         this.height = chs.getGetSmoothedStackHeight();
+        this.cellulose = chs.getCellulose();
+        this.lignin = chs.getLignin();
         return hybridStackSmoothed;
     }
 }
