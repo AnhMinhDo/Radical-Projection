@@ -32,6 +32,8 @@ public class CreateHybridStack {
     private int smoothedStackWidth;
     private int getSmoothedStackHeight;
     private int currentProgress;
+    private RandomAccessibleInterval<FloatType> lignin;
+    RandomAccessibleInterval<FloatType> cellulose;
 
     @Parameter
     private final OpService ops;
@@ -81,6 +83,10 @@ public class CreateHybridStack {
     public int getSmoothedStackWidth() {return smoothedStackWidth;}
 
     public int getGetSmoothedStackHeight() {return getSmoothedStackHeight;}
+
+    public RandomAccessibleInterval<FloatType> getLignin() { return lignin;}
+
+    public RandomAccessibleInterval<FloatType> getCellulose() {return cellulose;}
 
     public RandomAccessibleInterval<FloatType> process() throws IOException {
 //        // get the status Service
@@ -135,8 +141,8 @@ public class CreateHybridStack {
         FloatType weightCelluloseRatioFloatType = new FloatType((float)weightCelluloseRatio);
         FloatType weightLigninRatioFloatType = new FloatType((float)weightLigninRatio);
         // split the channels
-        RandomAccessibleInterval<FloatType> cellulose = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 0));
-        RandomAccessibleInterval<FloatType> lignin = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 1));
+        this.cellulose = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 0));
+        this.lignin = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 1));
         RandomAccessibleInterval<FloatType> hybrid = ops.convert().float32(Views.hyperSlice(imgPlus, channelDimIdx, 1));
         // Containers for result
         RandomAccessibleInterval<FloatType> celluloseMultiplied = ops.create().img(cellulose);
