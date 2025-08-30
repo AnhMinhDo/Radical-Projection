@@ -3,6 +3,8 @@ package schneiderlab.tools.radialprojection.controllers.controllers;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
@@ -16,8 +18,10 @@ import schneiderlab.tools.radialprojection.controllers.uiaction.czitotif.BrowseB
 import schneiderlab.tools.radialprojection.controllers.uiaction.mainwindow.AddSavingActionWhenMainWindowClosed;
 import schneiderlab.tools.radialprojection.controllers.workers.*;
 import schneiderlab.tools.radialprojection.imageprocessor.core.Vessel;
+import schneiderlab.tools.radialprojection.imageprocessor.core.bandgapmeasurement.Tile;
 import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.RotateDirection;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.Reconstruction;
+import schneiderlab.tools.radialprojection.imageprocessor.core.utils.RadialProjectionUtils;
 import schneiderlab.tools.radialprojection.models.czitotifmodel.CziToTifModel;
 import schneiderlab.tools.radialprojection.models.radialprojection.RadialProjectionModel;
 import schneiderlab.tools.radialprojection.models.radialprojection.VesselsSegmentationModel;
@@ -327,6 +331,8 @@ public class MainController {
                                 vesselsSegmentationModel.setHybridStackSmoothed(pasw.getHybridStackSmoothed());
                                 vesselsSegmentationModel.setHybridStackSmoothedWidth(pasw.getWidth());
                                 vesselsSegmentationModel.setHybridStackSmoothedHeight(pasw.getHeight());
+                                vesselsSegmentationModel.setCellulose(pasw.getCellulose());
+                                vesselsSegmentationModel.setLignin(pasw.getLignin());
                                 ImageJFunctions.show(vesselsSegmentationModel.getHybridStackNonSmoothed());
                                 ImageJFunctions.show(vesselsSegmentationModel.getHybridStackSmoothed());
                                 // update UI
@@ -484,7 +490,7 @@ public class MainController {
                 mainView.getTabbedPaneMainPane(),
                 mainView.getPanel3RadialProjection()));
 
-        // add the values from the czitotif model to the view
+        // add the values from the vesselSegmentation model to the view
         mainView.getSpinnerXYPixelSizeCreateSideView().setValue(vesselsSegmentationModel.getXyPixelSize());
         mainView.getSpinnerZPixelSizeCreateSideView().setValue(vesselsSegmentationModel.getzPixelSize());
         mainView.getSpinnerAnalysisWindow().setValue(vesselsSegmentationModel.getAnalysisWindow());
@@ -499,18 +505,28 @@ public class MainController {
         mainView.getButtonRunRadialProjection().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Create copy using cursors
-                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
-                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
-                net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
-                while (srcCursor.hasNext()) {
-                    dstCursor.next().set(srcCursor.next());
-                }
-                // Convert to ImagePlus
-                ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
-                impFloat.resetDisplayRange();
+                // Create copy of hybrid using cursors
+                 ImagePlus impFloat = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                         vesselsSegmentationModel.getHybridStackNonSmoothed(), "Non Smoothed Hybrid Stack");
+                // Create copy of Lignin using cursors
+                ImagePlus lignin = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                        vesselsSegmentationModel.getLignin(), "Non Smoothed Hybrid Stack");
+                // Create copy of celluose using cursors
+                ImagePlus cellulose = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                        vesselsSegmentationModel.getCellulose(), "Non Smoothed Hybrid Stack");
+//                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
+//                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
+//                net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
+//                while (srcCursor.hasNext()) {
+//                    dstCursor.next().set(srcCursor.next());
+//                }
+//                // Convert to ImagePlus
+//                ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
+//                impFloat.resetDisplayRange();
                 PolarProjectionWorker polarProjection = new PolarProjectionWorker(
                         impFloat,
+                        cellulose,
+                        lignin,
                         vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
                         vesselsSegmentationModel.getVesselArrayList()
                 );
@@ -530,20 +546,12 @@ public class MainController {
                 polarProjection.execute();
             }
         });
-
+        // Unrolling Vessels
         mainView.getButtonUnrollVessel().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Create copy using cursors
-                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
-                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
-                net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
-                while (srcCursor.hasNext()) {
-                    dstCursor.next().set(srcCursor.next());
-                }
-                // Convert to ImagePlus
-                ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
-                impFloat.resetDisplayRange();
+                ImagePlus impFloat = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                        vesselsSegmentationModel.getHybridStackNonSmoothed(), "Non Smoothed Hybrid Stack");
                 UnrollVesselWorker unrollVesselWorker = new UnrollVesselWorker(
                         impFloat,
                         vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
@@ -562,6 +570,32 @@ public class MainController {
                     }
                 });
                 unrollVesselWorker.execute();
+            }
+        });
+        //-------------------Analysis----------------------------------------------
+        mainView.getButtonAnalysisSkeletonize().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO: get the list of vessel, get the size, split them, create a List of Tiles object, use instance method to threshold and skeletonze
+                // using the
+                ArrayList<Vessel> vesselArrayList = vesselsSegmentationModel.getVesselArrayList();
+                Vessel vessel1 = vesselArrayList.get(0);
+                ImagePlus vessel1Img = vessel1.getRadialProjectionHybrid();
+                ArrayList<Tile> tileArrayList = Tile.divideIntoEqualSize(vessel1Img.getWidth(),
+                                                                    vessel1Img.getHeight(),
+                                                                            1);
+                Tile.splitImage(vessel1Img,tileArrayList);
+                for (Tile t: tileArrayList){
+                    t.thresholdOtsu();
+                }
+                ByteProcessor thresholdedProcessor = Tile.combineTiles(tileArrayList,vessel1Img.getWidth(),vessel1Img.getHeight());
+                ImagePlus thresholdedRadialProjection = new ImagePlus("skeletonized radial projection", thresholdedProcessor);
+                ByteProcessor skeletonizedRadialProjectionProcessor = (ByteProcessor) thresholdedProcessor.duplicate();
+//                skeletonizedRadialProjectionProcessor.invert();
+                skeletonizedRadialProjectionProcessor.skeletonize(255);
+                ImagePlus skeletonizedRadialProjection = new ImagePlus("Skeletonized Radial Projection", skeletonizedRadialProjectionProcessor);
+                thresholdedRadialProjection.show();
+                skeletonizedRadialProjection.show();
             }
         });
 
