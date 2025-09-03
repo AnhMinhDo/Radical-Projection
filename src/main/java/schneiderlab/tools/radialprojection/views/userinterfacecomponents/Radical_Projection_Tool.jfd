@@ -442,11 +442,55 @@ new FormModel {
 							"$rowConstraints": "[][][][][]"
 						} ) {
 							name: "panel2"
-							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "buttonAnalysisSkeletonize"
-								"text": "Thresholding"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelLegacyBandMeasurement"
+								"text": "<html> Legacy <br> Bands and Gaps <br> measurement</html>"
 							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 								"value": "cell 0 0 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "buttonLegacyBandMeasurement"
+								"text": "Measure"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 2 0 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelBandsSegmentationBySplittingImage"
+								"text": "<html>Band Segmentation <br> by Splitting Image</html>"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 1 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "buttonSegmentationBySplitting"
+								"text": "Segment & Skeletonize"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 2 1 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JSpinner" ) {
+								name: "spinnerPercentageForSplitting"
+								"model": new javax.swing.SpinnerNumberModel( 10, 1, 100, 1 )
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 4 1 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "comboBoxAutoThresholdingMethod"
+								auxiliary() {
+									"JavaCodeGenerator.customCreateCode": "new JComboBox<>(AutoThresholder.Method.values());"
+								}
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 6 1"
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "labelCustomSkeletonizeAlgorithm"
+								"text": "Custom Skeletonize Method"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 0 2 2 1"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "buttonCustomSkeletonize"
+								"text": "Custom Skeletonize"
+							}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+								"value": "cell 2 2 2 1"
 							} )
 						}, new FormLayoutConstraints( null ) {
 							"title": "Bands & Gaps"

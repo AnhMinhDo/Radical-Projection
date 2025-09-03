@@ -5,6 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import ij.process.AutoThresholder;
 import net.miginfocom.swing.*;
 import org.scijava.Context;
 import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.RotateDirection;
@@ -238,7 +239,19 @@ public class Radical_Projection_Tool extends JFrame {
 
 	public JButton getButtonUnrollVessel() { return buttonUnrollVessel; }
 
-	public JButton getButtonAnalysisSkeletonize() { return buttonAnalysisSkeletonize;}
+	public JButton getButtonLegacyBandMeasurement() { return buttonLegacyBandMeasurement;}
+
+	public JButton getButtonSegmentationBySplitting() { return buttonSegmentationBySplitting;}
+
+	public JButton getButtonCustomSkeletonize() { return buttonCustomSkeletonize;}
+
+	public JSpinner getSpinnerPercentageForSplitting() {return spinnerPercentageForSplitting;}
+
+	public JComboBox<AutoThresholder.Method> getComboboxAutoThresholdingMethod (){return comboBoxAutoThresholdingMethod;}
+
+
+
+
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -309,7 +322,14 @@ public class Radical_Projection_Tool extends JFrame {
 		scrollPane3 = new JScrollPane();
 		table3 = new JTable();
 		panel2 = new JPanel();
-		buttonAnalysisSkeletonize = new JButton();
+		labelLegacyBandMeasurement = new JLabel();
+		buttonLegacyBandMeasurement = new JButton();
+		labelBandsSegmentationBySplittingImage = new JLabel();
+		buttonSegmentationBySplitting = new JButton();
+		spinnerPercentageForSplitting = new JSpinner();
+		comboBoxAutoThresholdingMethod = new JComboBox<>(AutoThresholder.Method.values());
+		labelCustomSkeletonizeAlgorithm = new JLabel();
+		buttonCustomSkeletonize = new JButton();
 		panel8 = new JPanel();
 		checkBox2 = new JCheckBox();
 
@@ -779,9 +799,34 @@ public class Radical_Projection_Tool extends JFrame {
 							"[]" +
 							"[]"));
 
-						//---- buttonAnalysisSkeletonize ----
-						buttonAnalysisSkeletonize.setText("Thresholding");
-						panel2.add(buttonAnalysisSkeletonize, "cell 0 0 2 1");
+						//---- labelLegacyBandMeasurement ----
+						labelLegacyBandMeasurement.setText("<html> Legacy <br> Bands and Gaps <br> measurement</html>");
+						panel2.add(labelLegacyBandMeasurement, "cell 0 0 2 1");
+
+						//---- buttonLegacyBandMeasurement ----
+						buttonLegacyBandMeasurement.setText("Measure");
+						panel2.add(buttonLegacyBandMeasurement, "cell 2 0 2 1");
+
+						//---- labelBandsSegmentationBySplittingImage ----
+						labelBandsSegmentationBySplittingImage.setText("<html>Band Segmentation <br> by Splitting Image</html>");
+						panel2.add(labelBandsSegmentationBySplittingImage, "cell 0 1 2 1");
+
+						//---- buttonSegmentationBySplitting ----
+						buttonSegmentationBySplitting.setText("Segment & Skeletonize");
+						panel2.add(buttonSegmentationBySplitting, "cell 2 1 2 1");
+
+						//---- spinnerPercentageForSplitting ----
+						spinnerPercentageForSplitting.setModel(new SpinnerNumberModel(10, 1, 100, 1));
+						panel2.add(spinnerPercentageForSplitting, "cell 4 1 2 1");
+						panel2.add(comboBoxAutoThresholdingMethod, "cell 6 1");
+
+						//---- labelCustomSkeletonizeAlgorithm ----
+						labelCustomSkeletonizeAlgorithm.setText("Custom Skeletonize Method");
+						panel2.add(labelCustomSkeletonizeAlgorithm, "cell 0 2 2 1");
+
+						//---- buttonCustomSkeletonize ----
+						buttonCustomSkeletonize.setText("Custom Skeletonize");
+						panel2.add(buttonCustomSkeletonize, "cell 2 2 2 1");
 					}
 					tabbedPane1.addTab("Bands & Gaps", panel2);
 
@@ -897,7 +942,14 @@ public class Radical_Projection_Tool extends JFrame {
 	private JScrollPane scrollPane3;
 	private JTable table3;
 	private JPanel panel2;
-	private JButton buttonAnalysisSkeletonize;
+	private JLabel labelLegacyBandMeasurement;
+	private JButton buttonLegacyBandMeasurement;
+	private JLabel labelBandsSegmentationBySplittingImage;
+	private JButton buttonSegmentationBySplitting;
+	private JSpinner spinnerPercentageForSplitting;
+	private JComboBox comboBoxAutoThresholdingMethod;
+	private JLabel labelCustomSkeletonizeAlgorithm;
+	private JButton buttonCustomSkeletonize;
 	private JPanel panel8;
 	private JCheckBox checkBox2;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
