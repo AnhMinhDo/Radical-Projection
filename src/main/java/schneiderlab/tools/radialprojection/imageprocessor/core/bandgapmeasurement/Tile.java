@@ -32,23 +32,23 @@ public class Tile {
     }
 
     public static ArrayList<Tile> divideIntoEqualSize(int imageWidth, int imageHeight, double percentage){
-        int sizeOf1Portion = (int)(imageWidth * (percentage / 100));
-        System.out.println(sizeOf1Portion);
-        int numberOfEqualPortion = (int) imageWidth/sizeOf1Portion;
-        System.out.println(numberOfEqualPortion);
-        int remainder = imageWidth - numberOfEqualPortion*sizeOf1Portion;
-        System.out.println(remainder);
+        int sizeOf1Portion = (int)(imageHeight * (percentage / 100));
+        int numberOfEqualPortion = (int) imageHeight/sizeOf1Portion;
+        int remainder = imageHeight - numberOfEqualPortion*sizeOf1Portion;
         ArrayList<Tile> result = new ArrayList<>(numberOfEqualPortion+1);
         int indexTracking = 0;
         for (int i = 0 ; i < numberOfEqualPortion; i++) {
-            Tile portion = new Tile(indexTracking, 0,sizeOf1Portion,imageHeight);
+            Tile portion = new Tile(0, indexTracking,imageWidth,sizeOf1Portion);
             indexTracking+=sizeOf1Portion;
             result.add(portion);
         }
-        Tile remainderPortion = new Tile(indexTracking,0,remainder,imageHeight);
-        result.add(remainderPortion); // add the reminder portion
+        if(remainder != 0){
+            Tile remainderPortion = new Tile(0,indexTracking,imageWidth,remainder);
+            result.add(remainderPortion); // add the reminder portion
+        }
         return result;
     }
+
 
     public static void splitImage(ImagePlus imagePlus, List<Tile> tiles) {
         for (Tile t : tiles) {
@@ -68,15 +68,12 @@ public class Tile {
         return combined;
     }
 
-    public void thresholdOtsu(){
-        shortProcessor.blurGaussian(1);
-        shortProcessor.setAutoThreshold(AutoThresholder.Method.Mean,true);
+    public void autoThreshold(AutoThresholder.Method autoThresholdingMethods, int gaussianBlurValue){
+        shortProcessor.blurGaussian(gaussianBlurValue);
+        shortProcessor.setAutoThreshold(autoThresholdingMethods,true);
         thresholdedMask = shortProcessor.createMask();
     }
 
-    public void skeletonize(){
-        thresholdedMask.skeletonize();
-    }
 
     public ShortProcessor getImageProcessor() {
         return shortProcessor;
