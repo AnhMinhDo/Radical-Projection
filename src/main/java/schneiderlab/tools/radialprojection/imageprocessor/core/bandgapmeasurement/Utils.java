@@ -37,7 +37,7 @@ public class Utils {
         return result;
     }
     
-    public static ByteProcessor detectVesselPath(ShortProcessor inputImageProcessor, int width, int height){
+    public static ByteProcessor detectBandPath(ShortProcessor inputImageProcessor, int width, int height){
         short[] inputShortArray = (short[]) inputImageProcessor.getPixels();
         byte[] resultByteArray = new byte[inputShortArray.length];
         for (int i = 0; i < inputShortArray.length; i+= width) {
@@ -46,6 +46,19 @@ public class Utils {
             System.arraycopy(detectedPeak,0,resultByteArray,i,width);
         }
         return new ByteProcessor(width,height,resultByteArray);
+    }
+
+    public static ShortProcessor applyMask(ByteProcessor mask, ShortProcessor originalImage){
+        ShortProcessor result = new ShortProcessor(originalImage.getWidth(),originalImage.getHeight());
+        short[] resultPixelArray = (short[]) result.getPixels();
+        byte[] maskPixelArray = (byte[]) mask.getPixels();
+        short[] originalPixelArray = (short[]) originalImage.getPixels();
+        for (int i = 0; i < maskPixelArray.length; i++) {
+            if(maskPixelArray[i] != 0){
+                resultPixelArray[i] = originalPixelArray[i];
+            }
+        }
+        return result;
     }
 
 }
