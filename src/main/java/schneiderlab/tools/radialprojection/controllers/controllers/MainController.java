@@ -3,8 +3,11 @@ package schneiderlab.tools.radialprojection.controllers.controllers;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
+import ij.plugin.filter.BackgroundSubtracter;
+import ij.process.AutoThresholder;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
@@ -19,6 +22,7 @@ import schneiderlab.tools.radialprojection.controllers.uiaction.mainwindow.AddSa
 import schneiderlab.tools.radialprojection.controllers.workers.*;
 import schneiderlab.tools.radialprojection.imageprocessor.core.Vessel;
 import schneiderlab.tools.radialprojection.imageprocessor.core.bandgapmeasurement.Tile;
+import schneiderlab.tools.radialprojection.imageprocessor.core.bandgapmeasurement.Utils;
 import schneiderlab.tools.radialprojection.imageprocessor.core.convertczitotif.RotateDirection;
 import schneiderlab.tools.radialprojection.imageprocessor.core.segmentation.Reconstruction;
 import schneiderlab.tools.radialprojection.imageprocessor.core.utils.RadialProjectionUtils;
@@ -573,29 +577,54 @@ public class MainController {
             }
         });
         //-------------------Analysis----------------------------------------------
-        mainView.getButtonAnalysisSkeletonize().addActionListener(new ActionListener() {
+        mainView.getButtonSegmentationBySplitting().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: get the list of vessel, get the size, split them, create a List of Tiles object, use instance method to threshold and skeletonze
+                //TODO: get the list of vessel, get the size, split them, create a List of Tiles object, use instance method to threshold and skeletonize
                 // using the
                 ArrayList<Vessel> vesselArrayList = vesselsSegmentationModel.getVesselArrayList();
                 Vessel vessel1 = vesselArrayList.get(0);
-                ImagePlus vessel1Img = vessel1.getRadialProjectionHybrid();
+                ImagePlus vessel1Img = vessel1.getRadialProjectionLignin();
+                int percentageForSplitting = (int)mainView.getSpinnerPercentageForSplitting().getValue();
                 ArrayList<Tile> tileArrayList = Tile.divideIntoEqualSize(vessel1Img.getWidth(),
                                                                     vessel1Img.getHeight(),
-                                                                            1);
+                                                                            percentageForSplitting);
                 Tile.splitImage(vessel1Img,tileArrayList);
                 for (Tile t: tileArrayList){
-                    t.thresholdOtsu();
+                    t.autoThreshold((AutoThresholder.Method) mainView.getComboboxAutoThresholdingMethod().getSelectedItem(),1);
                 }
                 ByteProcessor thresholdedProcessor = Tile.combineTiles(tileArrayList,vessel1Img.getWidth(),vessel1Img.getHeight());
-                ImagePlus thresholdedRadialProjection = new ImagePlus("skeletonized radial projection", thresholdedProcessor);
+                ImagePlus thresholdedRadialProjection = new ImagePlus("Segmented radial projection", thresholdedProcessor);
                 ByteProcessor skeletonizedRadialProjectionProcessor = (ByteProcessor) thresholdedProcessor.duplicate();
-//                skeletonizedRadialProjectionProcessor.invert();
                 skeletonizedRadialProjectionProcessor.skeletonize(255);
                 ImagePlus skeletonizedRadialProjection = new ImagePlus("Skeletonized Radial Projection", skeletonizedRadialProjectionProcessor);
                 thresholdedRadialProjection.show();
                 skeletonizedRadialProjection.show();
+            }
+        });
+
+        mainView.getButtonCustomSkeletonize().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Vessel> vesselArrayList = vesselsSegmentationModel.getVesselArrayList();
+                Vessel vessel1 = vesselArrayList.get(0);
+                ImagePlus vessel1Img = vessel1.getRadialProjectionLignin();
+                // apply custom bandPath detect function
+                ShortProcessor bandPathShortProcessor = (ShortProcessor) vessel1Img.getProcessor().duplicate();
+                BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();
+                backgroundSubtracter.subtractBackround(bandPathShortProcessor,50);
+                bandPathShortProcessor.blurGaussian(1);
+                ByteProcessor bandPathByteProcessor = Utils.detectBandPath((ShortProcessor) vessel1Img.getProcessor(),vessel1Img.getWidth(),vessel1Img.getHeight());
+                ImagePlus bandPathImagePlus = new ImagePlus("apply custom skeletonize function",bandPathByteProcessor);
+                bandPathImagePlus.show();
+                // apply mask to hybrid image
+                ShortProcessor applyMaskedHybrid = Utils.applyMask(bandPathByteProcessor, (ShortProcessor) vessel1.getRadialProjectionHybrid().getProcessor());
+                ImagePlus applyMaskedHybridImagePlus = new ImagePlus("appliedMaskedHybrid", applyMaskedHybrid);
+                applyMaskedHybridImagePlus.show();
+                // apply mask to cellulose image
+                ShortProcessor applyMaskedCellulose = Utils.applyMask(bandPathByteProcessor, (ShortProcessor) vessel1.getRadialProjectionCellulose().getProcessor());
+                ImagePlus applyMaskedCelluloseImagePlus = new ImagePlus("appliedMaskedCellulose", applyMaskedCellulose);
+                applyMaskedCelluloseImagePlus.show();
             }
         });
 
