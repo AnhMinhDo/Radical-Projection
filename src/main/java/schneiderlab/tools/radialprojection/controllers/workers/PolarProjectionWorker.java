@@ -64,6 +64,8 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
             vesselPolarProjectionArrayList.add(vesselPolarProjectionCellulose);
             vesselPolarProjectionArrayList.add(vesselPolarProjectionLignin);
             vesselArrayList.get(i).setRadialProjectionHybrid(vesselPolarProjectionHybrid);
+            vesselArrayList.get(i).setRadialProjectionLignin(vesselPolarProjectionLignin);
+            vesselArrayList.get(i).setRadialProjectionCellulose(vesselPolarProjectionCellulose);
         }
         return null;
     }
