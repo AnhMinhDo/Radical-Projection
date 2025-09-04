@@ -13,7 +13,7 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
     private final ImagePlus celluloseStack;
     private final ImagePlus ligninStack;
     private final ImagePlus edgeBinaryMaskEdge;
-    private ArrayList<Vessel> vesselArrayList;
+    private final ArrayList<Vessel> vesselArrayList;
     private ArrayList<ImagePlus> vesselPolarProjectionArrayList;
 
     public PolarProjectionWorker(ImagePlus hybridStack,
@@ -34,7 +34,10 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
 
     @Override
     protected Void doInBackground() {
-        vesselPolarProjectionArrayList = new ArrayList<>(vesselArrayList.size());
+        vesselPolarProjectionArrayList = new ArrayList<>(vesselArrayList.size()*3);// 3 for lignin channel, cellulose channel, hybrid
+        int currentProgress = 0;
+        int increment = (int) 100.0/(vesselArrayList.size()*3);
+        setProgress(currentProgress);
         for (int i = 0; i < vesselArrayList.size(); i++) { // for each vessel
             PolarProjection polarProjectionHybrid = new PolarProjection(hybridStack,
                     edgeBinaryMaskEdge,
@@ -52,20 +55,27 @@ public class PolarProjectionWorker extends SwingWorker<Void, Void> {
                     5 // 5 degree is considered adequately small angle
             );
             ImagePlus vesselPolarProjectionHybrid=polarProjectionHybrid.process();
+            currentProgress= currentProgress+increment;
+            setProgress(currentProgress);
             ImagePlus vesselPolarProjectionCellulose=polarProjectionCellulose.process();
+            currentProgress= currentProgress+increment;
+            setProgress(currentProgress);
             ImagePlus vesselPolarProjectionLignin=polarProjectionLignin.process();
+            currentProgress= currentProgress+increment;
+            setProgress(currentProgress);
             String imageTitleHybrid = "Radial Projection Vessel " + (i + 1) + " Hybrid";
             String imageTitleCellulose = "Radial Projection Vessel " + (i + 1) + " Cellulose channel";
             String imageTitleLignin = "Radial Projection Vessel " + (i + 1) + " Lignin channel";
             vesselPolarProjectionHybrid.setTitle(imageTitleHybrid);
             vesselPolarProjectionCellulose.setTitle(imageTitleCellulose);
             vesselPolarProjectionLignin.setTitle(imageTitleLignin);
+            vesselArrayList.get(i).setRadialProjectionHybrid(vesselPolarProjectionHybrid.duplicate());
+            vesselArrayList.get(i).setRadialProjectionLignin(vesselPolarProjectionLignin.duplicate());
+            vesselArrayList.get(i).setRadialProjectionCellulose(vesselPolarProjectionCellulose.duplicate());
             vesselPolarProjectionArrayList.add(vesselPolarProjectionHybrid);
             vesselPolarProjectionArrayList.add(vesselPolarProjectionCellulose);
             vesselPolarProjectionArrayList.add(vesselPolarProjectionLignin);
-            vesselArrayList.get(i).setRadialProjectionHybrid(vesselPolarProjectionHybrid);
-            vesselArrayList.get(i).setRadialProjectionLignin(vesselPolarProjectionLignin);
-            vesselArrayList.get(i).setRadialProjectionCellulose(vesselPolarProjectionCellulose);
+
         }
         return null;
     }
