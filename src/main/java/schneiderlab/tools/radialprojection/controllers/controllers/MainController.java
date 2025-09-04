@@ -509,24 +509,18 @@ public class MainController {
         mainView.getButtonRunRadialProjection().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // update the status bar
+                mainView.getTextFieldStatusRadialProjection().setText("Radial Projection...");
+                mainView.getProgressBarRadialProjection().setValue(0);
                 // Create copy of hybrid using cursors
                  ImagePlus impFloat = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
                          vesselsSegmentationModel.getHybridStackNonSmoothed(), "Non Smoothed Hybrid Stack");
                 // Create copy of Lignin using cursors
                 ImagePlus lignin = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
                         vesselsSegmentationModel.getLignin(), "Non Smoothed Hybrid Stack");
-                // Create copy of celluose using cursors
+                // Create copy of cellulose using cursors
                 ImagePlus cellulose = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
                         vesselsSegmentationModel.getCellulose(), "Non Smoothed Hybrid Stack");
-//                Img<FloatType> copy = ArrayImgs.floats(Intervals.dimensionsAsLongArray(vesselsSegmentationModel.getHybridStackNonSmoothed()));
-//                net.imglib2.Cursor<FloatType> srcCursor = Views.flatIterable(vesselsSegmentationModel.getHybridStackNonSmoothed()).cursor();
-//                net.imglib2.Cursor<FloatType> dstCursor = copy.cursor();
-//                while (srcCursor.hasNext()) {
-//                    dstCursor.next().set(srcCursor.next());
-//                }
-//                // Convert to ImagePlus
-//                ImagePlus impFloat = ImageJFunctions.wrap(copy, "Copied RAI");
-//                impFloat.resetDisplayRange();
                 PolarProjectionWorker polarProjection = new PolarProjectionWorker(
                         impFloat,
                         cellulose,
@@ -537,10 +531,17 @@ public class MainController {
                 polarProjection.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
+                        if("progress".equals(evt.getPropertyName())){
+                            mainView.getProgressBarRadialProjection().setValue((int)evt.getNewValue());
+                        }
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
+                            mainView.getTextFieldStatusRadialProjection().setText("Radial Projection Complete");
+                            mainView.getProgressBarRadialProjection().setValue(100);
                             ArrayList<ImagePlus> vesselRadialProjectionList = polarProjection.getVesselPolarProjectionArrayList();
+                            //TODO: the line below should not be placed here, the transfer of references from one model to another need to be handled universal not only when the radial projection is performed
                             radialProjectionModel.setVesselArrayList(vesselsSegmentationModel.getVesselArrayList()); // transfer the vesselArrayList to from segmentation Model to radialProjectionModel
+                            // show the results to users
                             for(ImagePlus radialProjectedImage : vesselRadialProjectionList){
                                 radialProjectedImage.show();
                             }
@@ -554,19 +555,37 @@ public class MainController {
         mainView.getButtonUnrollVessel().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ImagePlus impFloat = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                // update the status bar
+                mainView.getTextFieldStatusRadialProjection().setText("Unrolling...");
+                mainView.getProgressBarRadialProjection().setValue(0);
+                // create copy of Hybrid using cursors
+                ImagePlus hybrid = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
                         vesselsSegmentationModel.getHybridStackNonSmoothed(), "Non Smoothed Hybrid Stack");
+                // Create copy of Lignin using cursors
+                ImagePlus lignin = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                        vesselsSegmentationModel.getLignin(), "Non Smoothed Lignin Stack");
+                // Create copy of cellulose using cursors
+                ImagePlus cellulose = RadialProjectionUtils.copyAndConvertRandomAccessIntervalToImagePlus(
+                        vesselsSegmentationModel.getCellulose(), "Non Smoothed Cellulose Stack");
                 UnrollVesselWorker unrollVesselWorker = new UnrollVesselWorker(
-                        impFloat,
+                        hybrid,
+                        cellulose,
+                        lignin,
                         vesselsSegmentationModel.getEdgeBinaryMaskImagePlus(),
                         vesselsSegmentationModel.getVesselArrayList()
                 );
                 unrollVesselWorker.addPropertyChangeListener(new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
+                        if("progress".equals(evt.getPropertyName())){
+                            mainView.getProgressBarRadialProjection().setValue((int)evt.getNewValue());
+                        }
                         if ("state".equals(evt.getPropertyName()) &&
                                 evt.getNewValue() == SwingWorker.StateValue.DONE){
+                            mainView.getTextFieldStatusRadialProjection().setText("Unrolling Complete");
+                            mainView.getProgressBarRadialProjection().setValue(100);
                             ArrayList<ImagePlus> vesselUnrolledList = unrollVesselWorker.getVesselPolarProjectionArrayList();
+                            // show the results to the users
                             for(ImagePlus unrolledImage : vesselUnrolledList){
                                 unrolledImage.show();
                             }
