@@ -11,7 +11,10 @@ public class Vessel {
     private ImagePlus radialProjectionHybrid;
     private ImagePlus radialProjectionCellulose;
     private ImagePlus radialProjectionLignin;
-    private ImagePlus unrolledVessel;
+//    private ImagePlus unrolledVessel;
+    private ImagePlus unrolledVesselHybrid;
+    private ImagePlus unrolledVesselCellulose;
+    private ImagePlus unrolledVesselLignin;
 
 
     public Vessel(int numberOfSliceInStack) {
@@ -75,13 +78,37 @@ public class Vessel {
         this.radialProjectionLignin = radialProjectionLignin;
     }
 
-    public ImagePlus getUnrolledVessel() {
-        return unrolledVessel;
+    public ImagePlus getUnrolledVesselHybrid() {
+        return unrolledVesselHybrid;
     }
 
-    public void setUnrolledVessel(ImagePlus unrolledVessel) {
-        this.unrolledVessel = unrolledVessel;
+    public void setUnrolledVesselHybrid(ImagePlus unrolledVesselHybrid) {
+        this.unrolledVesselHybrid = unrolledVesselHybrid;
     }
+
+    public ImagePlus getUnrolledVesselCellulose() {
+        return unrolledVesselCellulose;
+    }
+
+    public void setUnrolledVesselCellulose(ImagePlus unrolledVesselCellulose) {
+        this.unrolledVesselCellulose = unrolledVesselCellulose;
+    }
+
+    public ImagePlus getUnrolledVesselLignin() {
+        return unrolledVesselLignin;
+    }
+
+    public void setUnrolledVesselLignin(ImagePlus unrolledVesselLignin) {
+        this.unrolledVesselLignin = unrolledVesselLignin;
+    }
+
+//    public ImagePlus getUnrolledVessel() {
+//        return unrolledVessel;
+//    }
+//
+//    public void setUnrolledVessel(ImagePlus unrolledVessel) {
+//        this.unrolledVessel = unrolledVessel;
+//    }
 
     private static class VesselSliceData{
         private final Point centroid;
