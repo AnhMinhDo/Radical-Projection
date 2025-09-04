@@ -384,11 +384,22 @@ new FormModel {
 						"value": "cell 0 2 2 1"
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button5"
+						name: "buttonMoveToAnalysis"
 						"text": "Move to Analysis"
 						"enabled": false
 					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 						"value": "cell 0 3 2 1"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "textFieldStatusRadialProjection"
+						"editable": false
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 0 6 4 1"
+					} )
+					add( new FormComponent( "javax.swing.JProgressBar" ) {
+						name: "progressBarRadialProjection"
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 4 6 8 1"
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "2. Radial Projection"

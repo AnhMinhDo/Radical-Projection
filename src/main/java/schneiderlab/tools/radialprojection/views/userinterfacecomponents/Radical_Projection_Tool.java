@@ -249,6 +249,11 @@ public class Radical_Projection_Tool extends JFrame {
 
 	public JComboBox<AutoThresholder.Method> getComboboxAutoThresholdingMethod (){return comboBoxAutoThresholdingMethod;}
 
+	public JTextField getTextFieldStatusRadialProjection(){return textFieldStatusRadialProjection;}
+
+	public JProgressBar getProgressBarRadialProjection(){return progressBarRadialProjection;}
+
+
 
 
 
@@ -312,7 +317,9 @@ public class Radical_Projection_Tool extends JFrame {
 		textFieldRadialProjection = new JTextField();
 		buttonRunRadialProjection = new JButton();
 		buttonUnrollVessel = new JButton();
-		button5 = new JButton();
+		buttonMoveToAnalysis = new JButton();
+		textFieldStatusRadialProjection = new JTextField();
+		progressBarRadialProjection = new JProgressBar();
 		panel4Analysis = new JPanel();
 		tabbedPane1 = new JTabbedPane();
 		panel1 = new JPanel();
@@ -681,10 +688,15 @@ public class Radical_Projection_Tool extends JFrame {
 				buttonUnrollVessel.setText("Unrolling Vessel");
 				panel3RadialProjection.add(buttonUnrollVessel, "cell 0 2 2 1");
 
-				//---- button5 ----
-				button5.setText("Move to Analysis");
-				button5.setEnabled(false);
-				panel3RadialProjection.add(button5, "cell 0 3 2 1");
+				//---- buttonMoveToAnalysis ----
+				buttonMoveToAnalysis.setText("Move to Analysis");
+				buttonMoveToAnalysis.setEnabled(false);
+				panel3RadialProjection.add(buttonMoveToAnalysis, "cell 0 3 2 1");
+
+				//---- textFieldStatusRadialProjection ----
+				textFieldStatusRadialProjection.setEditable(false);
+				panel3RadialProjection.add(textFieldStatusRadialProjection, "cell 0 6 4 1");
+				panel3RadialProjection.add(progressBarRadialProjection, "cell 4 6 8 1");
 			}
 			tabbedPaneMainPane.addTab("2. Radial Projection", panel3RadialProjection);
 
@@ -932,7 +944,9 @@ public class Radical_Projection_Tool extends JFrame {
 	private JTextField textFieldRadialProjection;
 	private JButton buttonRunRadialProjection;
 	private JButton buttonUnrollVessel;
-	private JButton button5;
+	private JButton buttonMoveToAnalysis;
+	private JTextField textFieldStatusRadialProjection;
+	private JProgressBar progressBarRadialProjection;
 	private JPanel panel4Analysis;
 	private JTabbedPane tabbedPane1;
 	private JPanel panel1;
