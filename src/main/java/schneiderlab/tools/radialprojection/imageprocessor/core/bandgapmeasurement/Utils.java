@@ -70,6 +70,7 @@ public class Utils {
     public static int[] calculatePeakProminence(short[] pixelIntensityArray, byte[] peakMaskArray, byte[] troughMaskArray) {
         // TODO: check the input to have the same size
         int[] result = new int[pixelIntensityArray.length];
+        Arrays.fill(result, 0);
         // get the for every peak, step to the left to find the trough, or the left  edge(index 0), step to the right to find the trough, or the right edge (index = array.length-1)
         for (int i = 0; i < peakMaskArray.length; i++) {
             int markValue = peakMaskArray[i] & 0xFF;
@@ -97,7 +98,75 @@ public class Utils {
         return result;
         }
 
+        public static byte[] bandMask1D(short[] pixelIntensityArray, byte[] peakMaskArray, int[] prominenceArray){
+            byte[] result = new byte[peakMaskArray.length];
+            Arrays.fill(result, (byte)0);
+            // for each peak, use the prominence/2, go to left and any pixel with intensity greater than prominence/2, mark 255; do the same for right
+            for (int i = 0; i < peakMaskArray.length; i++) {
+                if ((peakMaskArray[i] & 0xFF) == 255) { // check if this is the peak
+                    result[i] = (byte)255;
+                    int currentProminence = prominenceArray[i];
+                    int baseline = currentProminence/2;
+                    for (int leftPointer = i-1; leftPointer >= 0; leftPointer--) { // walk to the left, from i-1 to 0
+                        if(pixelIntensityArray[leftPointer] > baseline){
+                            result[leftPointer] = (byte)255;
+                        } else {
+                            break;
+                        }
+                    }
+                    for (int rightPointer = i+1; rightPointer < peakMaskArray.length; rightPointer++) { // walk to the right, from i+1 to the end of array
+                        if(pixelIntensityArray[rightPointer] > baseline){
+                            result[rightPointer] = (byte)255;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
 
+        public static double calculateAverageBandWidthInNm(byte[] bandMaskArray, int pixelScaleInNanometer) {
+            int numberOfBand = 0;
+            int sumBandWidth = 0;
+            for (int i = 0; i < bandMaskArray.length;) {
+                if ((bandMaskArray[i] & 0xFF) == 255) {
+                    numberOfBand++;
+                    while (i < bandMaskArray.length && (bandMaskArray[i]&0xFF) == 255) {
+                        sumBandWidth++;
+                        i++;
+                    }
+                } else {
+                    i++;
+                }
+            }
+            if (numberOfBand == 0) {
+                return 0;
+            } else {
+                return ((double) sumBandWidth * pixelScaleInNanometer / (double) numberOfBand);
+            }
+        }
+
+        public static double calculateAverageGapWidthInNm(byte[] bandMaskArray, int pixelScaleInNanometer){
+            int numberOfGap = 0;
+            int sumGapWidth = 0;
+            for (int i = 0; i < bandMaskArray.length;) {
+                if ((bandMaskArray[i] & 0xFF) != 255) {
+                    numberOfGap++;
+                    while (i < bandMaskArray.length && (bandMaskArray[i]&0xFF) != 255) {
+                        sumGapWidth++;
+                        i++;
+                    }
+                } else {
+                    i++;
+                }
+            }
+            if (numberOfGap == 0) {
+                return 0;
+            } else {
+                return ((double) sumGapWidth * pixelScaleInNanometer / (double) numberOfGap);
+            }
+        }
 
     
     public static ByteProcessor detectBandPath(ShortProcessor inputImageProcessor, int width, int height){
