@@ -596,11 +596,33 @@ public class MainController {
             }
         });
         //-------------------Analysis----------------------------------------------
+        mainView.getButtonLegacyBandMeasurement().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ImagePlus vessel1LigninRadialProjection = radialProjectionModel.getVesselArrayList().get(0).getRadialProjectionLignin();
+                ShortProcessor vessel1LigninRadialProjectionImageProcessor = (ShortProcessor) vessel1LigninRadialProjection.getProcessor();
+                RandomLineScanWorker randomLineScanWorker = new RandomLineScanWorker(100,
+                        25,
+                        200,
+                        vessel1LigninRadialProjectionImageProcessor);
+                randomLineScanWorker.addPropertyChangeListener(new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if("state".equals(evt.getPropertyName())&&
+                                evt.getNewValue()==SwingWorker.StateValue.DONE){
+                            ImageProcessor imageWithOnlyScanBand = randomLineScanWorker.getImageWithOnlyScanBand();
+                            ImagePlus imageWithOnlyScanBandImagePlus = new ImagePlus("Random Line Scan", imageWithOnlyScanBand);
+                            imageWithOnlyScanBandImagePlus.show();
+                        }
+                    }
+                });
+                randomLineScanWorker.execute();
+            }
+        });
+
         mainView.getButtonSegmentationBySplitting().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: get the list of vessel, get the size, split them, create a List of Tiles object, use instance method to threshold and skeletonize
-                // using the
                 ArrayList<Vessel> vesselArrayList = vesselsSegmentationModel.getVesselArrayList();
                 Vessel vessel1 = vesselArrayList.get(0);
                 ImagePlus vessel1Img = vessel1.getRadialProjectionLignin();
